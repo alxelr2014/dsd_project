@@ -15,9 +15,9 @@ class CannonTopDown:
 
 	def index(self, i, row=0, col=0):
 		if row != 0:
-			return i * self.p, min((i + 1) * self.p, row)
+			return i * self.sqrt_p, min((i + 1) * self.sqrt_p, row)
 		if col != 0:
-			return i * self.p, min((i + 1) * self.p, col)
+			return i * self.sqrt_p, min((i + 1) * self.sqrt_p, col)
 
 	def p_block_mult(self, i, j, k):
 		row_index_A = self.index(i, row=self.m)
@@ -26,15 +26,18 @@ class CannonTopDown:
 		col_index_B = self.index(j, col=self.n)
 		new_A = self.a_matrix[row_index_A[0]: row_index_A[1], col_index_A[0]: col_index_A[1]]
 		new_B = self.b_matrix[row_index_B[0]: row_index_B[1], col_index_B[0]: col_index_B[1]]
-		return np.dot(new_A, new_B)
+		return np.dot(new_A, new_B) # matrix multiplication
 
 	def main_algorithm(self):
-		for _i in range(math.ceil(self.m / self.p)):
-			for _j in range(math.ceil(self.n / self.p)):
+		for _i in range(math.ceil(self.m / self.sqrt_p)):
+			for _j in range(math.ceil(self.n / self.sqrt_p)):
 				for _k in range(self.sqrt_p):
 					row_index = self.index(_i, row=self.m)
 					col_index = self.index(_j, col=self.n)
 					self.c_matrix[row_index[0]: row_index[1], col_index[0]:col_index[1]] += self.p_block_mult(_i, _j, _k)
+					print(col_index)
+					print(row_index)
+					print()
 		self.verification()
 
 	def verification(self):
@@ -45,4 +48,4 @@ class CannonTopDown:
 		print(D)
 low = 1
 high = 15
-CannonTopDown(random.randint(low,high), random.randint(low,high) , random.randint(low ,high), random.randint(low, high)).main_algorithm()
+CannonTopDown(4,4,4,2).main_algorithm()
