@@ -54,7 +54,7 @@ class FpArithmetic:
         self.__driver.close()
 
 
-fp = FpArithmetic(executable_path="/home/tandalalam/Desktop/pythonProject3/chromedriver")
+fp = FpArithmetic(executable_path="C:/Users/emadz/Desktop/School/Books/Semester IV/Digital System Design/Project/GoldenModel/chromedriver.exe")
 test = fp.times_fp(4.32, 6.37)
 print(test)
 print(fp.bin_to_fp(test))
