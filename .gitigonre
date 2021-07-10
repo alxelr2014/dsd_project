@@ -18,4 +18,5 @@ transcript*
 sc_dpiheader.h
 vsim.dbg
 Coprocessor/work/
-
+*.cr.mti
+*.mpf
