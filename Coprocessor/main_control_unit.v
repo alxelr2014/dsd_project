@@ -36,6 +36,13 @@ always @(posedge i_Clock)
 	case(r_State)
 		s_Idle:
 			begin
+            if(i_Data_Ready == 1'b1)
+			    begin
+			    	//more?
+			    	r_State <= s_Request_Config_Grant;
+			    end
+			    else
+			    r_State <= s_Idle;
 
 			end
 
@@ -68,5 +75,7 @@ always @(posedge i_Clock)
 			begin
 
 			end
+    endcase
 
+    end
 endmodule
