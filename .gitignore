@@ -20,3 +20,4 @@ vsim.dbg
 Coprocessor/work
 *.cr.mti
 *.mpf
+GoldenModel/venv
