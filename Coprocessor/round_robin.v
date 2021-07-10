@@ -1,5 +1,5 @@
 
-module arbiter #(parameter width ,parameter time_quantum) (input in_clk,input in_reset,input [width - 1:0] in_request, output reg [width - 1:0] out_grant);
+module round_robin #(parameter width ,parameter time_quantum) (input in_clk,input in_reset,input [width - 1:0] in_request, output reg [width - 1:0] out_grant);
 
 localparam s_IDLE = 2'b00 , s_GRANT = 2'b01 , s_WORK = 2'b10;
 reg [1:0] r_state;
@@ -67,4 +67,34 @@ always @(posedge in_clk) begin
 	endcase
 end
 
+endmodule
+
+`timescale 1ns/1ns 
+module round_robin_tb();
+reg clk ,reset;
+parameter half_cc = 32'd1;
+parameter width = 32'd5;
+parameter time_quantum = 32'd2;
+reg [width - 1 : 0] request;
+wire [width - 1 : 0] grant;
+round_robin #(.width(width) , .time_quantum(time_quantum)) uut (.in_clk (clk),.in_reset(reset) , .in_request(request), .out_grant(grant));
+initial begin
+	clk = 1'b0;
+	forever #(half_cc) clk = ~clk;
+end
+
+initial begin
+	reset = 1'b1;
+	#(half_cc) reset = 1'b0;
+	#(half_cc) reset = 1'b1;
+end 
+
+initial begin
+$monitor ("@ time = %d, reset = %b, requests = %b, grant = %b",$realtime,reset, request, grant);
+request <= 5'b00100;
+#(4*half_cc) 
+#(half_cc) request <= 5'b01100;
+#(5*half_cc) request <= 5'b00010;
+
+end
 endmodule
