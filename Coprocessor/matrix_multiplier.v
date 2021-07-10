@@ -1,22 +1,22 @@
-module matrix_multiplier #(parameter rowsA = 2,
-	parameter colsA = 2,
-	parameter rowsB = 2,
-	parameter colsB = 2) (input_row, input_cell, input_row_ack, input_cell_ack, clk, rst, input_row_stb, input_cell_stb, output_row, output_row_stb, multiplication_done, multipliers_ready);
+module matrix_multiplier #(parameter k = 2,) 
+	(
+		input clk, rst, input_row_stb, input_cell_stb;
+		input [31:0] input_cell;
+		input [32*k - 1:0] input_row;
+		output input_row_ack, input_cell_ack;
+		output reg output_row_stb, multiplication_done, multipliers_ready;
+		output reg [32*k - 1:0] output_row;
+	
+	);
 
-	input clk, rst, input_row_stb, input_cell_stb;
-	input [31:0] input_cell;
-	input [32*colsB - 1:0] input_row;
-	output input_row_ack, input_cell_ack;
-	output reg output_row_stb, multiplication_done, multipliers_ready;
-	output reg [32*colsB - 1:0] output_row;
 
-	wire [colsB-1:0] multiplier_out_stb;
-	wire [colsB-1:0] multiplier_out_ack;
-	wire [31:0] multiplier_out [colsB-1:0];
-	wire [colsB-1:0] adder_out_stb;
-	reg [colsB-1:0] adder_out_ack;
-	wire [32*colsB - 1:0] adder_out;
-	reg [colsB-1:0] pipeline;
+	wire [k-1:0] multiplier_out_stb;
+	wire [k-1:0] multiplier_out_ack;
+	wire [31:0] multiplier_out [k-1:0];
+	wire [k-1:0] adder_out_stb;
+	reg [k-1:0] adder_out_ack;
+	wire [32*k - 1:0] adder_out;
+	reg [k-1:0] pipeline;
 
 	integer counter1=0, counter2=0;
 
@@ -31,12 +31,12 @@ module matrix_multiplier #(parameter rowsA = 2,
 	    output_row <= 0;
 	    adder_out_ack <= 0;
 	    multipliers_ready <= 0;
-	    pipeline <= (2**colsB) - 1;
+	    pipeline <= (2**k) - 1;
 	  end else
 	  begin
 	    if (output_row_stb && counter1 == 0)
 	    begin
-	      if (counter2 == rowsA)
+	      if (counter2 == k)
 	      begin
 	        multiplication_done <= 1;
 	        counter2 <= 0;
@@ -45,7 +45,7 @@ module matrix_multiplier #(parameter rowsA = 2,
 	      output_row_stb <= 0;
 	    end else
 	    begin
-	      if (counter1 == rowsB && &adder_out_stb)
+	      if (counter1 == k && &adder_out_stb)
 	      begin
 	        output_row_stb <= 1;
 	        counter1 <= 0;
@@ -76,7 +76,7 @@ module matrix_multiplier #(parameter rowsA = 2,
 
 	genvar i;
 	generate
-	  for(i = 0; i < colsB; i = i + 1)
+	  for(i = 0; i < k; i = i + 1)
 	  begin: ALU
 	    multiplier Multiplierr 
 	    		(.input_a(input_cell), 
