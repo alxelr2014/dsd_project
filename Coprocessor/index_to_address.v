@@ -3,7 +3,7 @@ module index_to_address #(parameter Log_Memory_Size = 10)(
     input[] i_Row_Index,
     input[] i_Column_Index,
     input[2:0] i_Type,
-    output[Log_Memory_Size-1:0] o_Address
+    output[Log_Memory_Size] o_Address
 );
     
 endmodule

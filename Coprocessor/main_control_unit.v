@@ -18,6 +18,7 @@ reg[] r_Cycle_Counter; // 0 to \theta
 reg[] r_Theta;
 reg[] r_Gamma;
 reg[] r_Lambda;
+reg[] r_mu;
 // Other Random Greek Letters
 reg[2:0] r_State;
 
