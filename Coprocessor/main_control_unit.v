@@ -4,11 +4,12 @@ module main_CU #(parameter p = 4) (
     inout io_Memory_Data,
     input i_Indexes_Received,
     input i_Result_Ready,
+    output[31:0] o_Config,
     output o_Grant_Request,
     output o_Memory_Address,
     output reg[] o_Row_Index,
     output reg[] o_Column_Index,
-    output reg[0:p-1] o_Indexes_Ready
+    output reg[p-1:0] o_Indexes_Ready
 );
     
 reg[] r_Processor_Counter; // o to p
