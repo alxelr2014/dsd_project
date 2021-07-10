@@ -17,6 +17,6 @@ cov*/
 transcript*
 sc_dpiheader.h
 vsim.dbg
-Coprocessor/work/
+Coprocessor/work
 *.cr.mti
 *.mpf
