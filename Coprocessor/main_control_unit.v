@@ -48,33 +48,48 @@ always @(posedge i_Clock)
 
 		s_Request_Config_Grant:
 			begin
-
-			end
+			    if(i_Grant == 1'b1)
+			    begin
+			    	r_State <= s_Read_Config;
+		    	end
+		    	else
+			        r_State <= s_Request_Config_Grant;
+		    end
 
 		s_Read_Config:
 			begin
 
-			end
+			else
+			    r_State <= s_Read_Config;
+		end
 
 		s_Scatter:
 			begin
 
-			end
+			else
+			    r_State <= s_Scatter;
+		end
 
 		s_Wait_For_Ready:
 			begin
 
-			end
+			else
+				r_State <= s_Wait_For_Ready;
+		end
 
 		s_Request_Status_Grant:
 			begin
 
-			end
+			else
+			    r_State <= s_Request_Config_Grant;
+		end
 
 		s_Change_Status:
 			begin
 
-			end
+			else
+				r_State <= s_Change_Status;
+		end
     endcase
 
     end
