@@ -21,4 +21,8 @@ vsim.dbg
 Coprocessor/work
 *.cr.mti
 *.mpf
+*.toc
+*.aux
+*.log
+*.gz
 GoldenModel/venv

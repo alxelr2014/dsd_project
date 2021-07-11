@@ -21,7 +21,6 @@ module CU #(parameter k = 2, parameter index_width = 8, parameter memory_size = 
     output reg o_Indexes_Received, // send to Main CU for Acknowledge.
     output reg o_Result_Ready, // send to Main CU and back to idle state
 
-
     //PU input output
     input i_Partial_Output_Ready, // PU send to show A_ix * B_xj is ready
     output reg o_PU_Start, // send to PU, PU start working
@@ -41,9 +40,9 @@ reg[3:0] r_State;
 wire[index_width-1:0] w_Row_Index_To_Decode;
 wire[index_width-1:0] w_Column_Index_To_Decode;
 
-
 assign w_Row_Index_To_Decod = (o_RF_Write_Enable)? r_Row_Index : (o_AorB)? r_x : r_Row_Index;
 assign w_Column_Index_To_Decode = (o_RF_Write_Enable)? r_Column_Index : (o_AorB)? r_Column_Index : r_x;
+
 assign o_RF_Address = r_Clock_Count;
 
 // index_to_address() // TODO Memory Addressing
