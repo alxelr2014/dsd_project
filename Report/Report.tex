@@ -1,4 +1,5 @@
 \documentclass[]{article}
+\usepackage[table,xcdraw,svgnames]{xcolor}
 \usepackage{commons/course}
 \usepackage{mathtools}
 \DeclarePairedDelimiter\ceil{\lceil}{\rceil}
@@ -56,9 +57,8 @@
 	\end{equation}
 	
 	با داشتن تعداد تعداد مشخصی ضرب کننده‌ی ماتریسی $k*k$ می‌توانیم این به طور موازی با استفاده از آنها حاصل نهایی $A\times B$ را محاسبه کنیم. 
+	\pagebreak
 	
-\end{section-container}
-
 \subsection{قرارداد‌های ریاضی}
 
 توجه می‌کنیم که در ادامه‌ی این گزارش و توضیحات لازمه در نظر می‌گیریم که ماتریس‌های ورودی $A_{mr}$ و $B_{rn}$ خواهند بود و بنابراین ماتریس‌ خروجی به صورت
@@ -74,6 +74,7 @@ $A_{mr} \times B_{rn} = C_{mn}$
 	\begin{equation}
 	\gamma = \ceil*{\dfrac{n}{k}}
 	\end{equation}
+	\label{2}
 \end{subequations}
 از این نماد‌ها به کرّات در طول گزارش استفاده خواهد شد. توجه می‌کنیم که علت اینکه سقف این حاصل تقسیم‌ها را در نظر گرفتیم همان است که اگر اندازه‌ی ماتریس‌ها بر $k$ بخش‌پذیر نباشد با اضافه کردن صفر به انتها‌ی آن باعث بخش‌پذیری می‌شویم. 
 \subsection{نحوه‌ی عملکرد از نظر مساحت و تایمینگ}
@@ -85,6 +86,7 @@ $A_{mr} \times B_{rn} = C_{mn}$
 \begin{equation}
 	\dfrac{\lambda\gamma\mu k^2}{\text{\lr{\#number of PU}}} = 	\dfrac{\lambda\gamma\mu k^2}{p}
 \end{equation}
+	\pagebreak
 
 \subsection{استاندارد‌ \lr{IEEE 754}}
 محاسبات در این پروژه از استاندارد
@@ -103,14 +105,108 @@ $A_{mr} \times B_{rn} = C_{mn}$
 \text{value} = (-1)^{sign} \times 2^{(E-127)} \times (1 + \sum_{i=1}^{23}b_{23-i}2^{-i})
 \end{equation}
  
+
 \subsection{مراجع مورد استفاده}
 
-\pagebreak
-\section{توصیف معماری سیستم}
+\end{section-container}
+
+\begin{section-container}{توصیف معماری سیستم}
 \subsection{اینترفیس‌های سیستم و قرارداد استفاده از آن }
+به طور کلی سخت‌افزار از یک حافظه و بخش محاسبه‌ی ضرب ماتریسی تشکیل شده است که پردازنده‌ می‌تواند ورودی‌ها را درون حافظه قرار داده و خروجی‌ها را نیز از آن بخواند.
+(\lr{I/O Map}). 
+با این حال قرارداد‌هایی در نحوه‌ی استفاده از مموری وجود دارد که باید به آن توجه شود. ساختار کلی حافظه به صورت زیر خواهد بود:
+\begin{table}[h]
+	\centering
+	\begin{tabular}{clll}
+		\hline
+		\multicolumn{4}{|c|}{Config}                                          \\ \hline
+		\multicolumn{4}{|c|}{Status}                                          \\ \hline
+		\multicolumn{4}{|c|}{$A_{11}$}                                        \\ \hline
+
+		\multicolumn{4}{|c|}{$A_{12}$}                                        \\ \hline
+
+		\multicolumn{4}{|c|}{$\vdots$}                                        \\ \hline
+		\multicolumn{4}{|c|}{$A_{\lambda\mu}$}  \\ \hline   
+		\multicolumn{4}{|c|}{$B_{11}$}                                        \\ \hline
+		\multicolumn{4}{|c|}{$B_{12}$}                                        \\ \hline
+				\multicolumn{4}{|c|}{$\vdots$}                                        \\ \hline
+		\multicolumn{4}{|c|}{$B_{\mu\gamma}$}                                        \\ \hline
+				\multicolumn{4}{|l|}{\cellcolor[HTML]{595959}{\color[HTML]{595959}aaaaaaaaaaaaaaaaaaaaa }} \\ \hline   
+			\multicolumn{4}{|c|}{$C_{11}$}                                        \\ \hline
+	
+	\multicolumn{4}{|c|}{$C_{12}$}                                        \\ \hline
+	
+	\multicolumn{4}{|c|}{$\vdots$}                                        \\ \hline
+	\multicolumn{4}{|c|}{$C_{\lambda\gamma}$}  \\ \hline 
+	    				\multicolumn{4}{|l|}{\cellcolor[HTML]{595959}{\color[HTML]{595959}aaaaaaaaaaaaaaaaaaaaa }} \\ \hline   
+	\end{tabular}
+	\caption{شماتیک حافظه}
+\end{table}
+
+
+که در آن هر یک از $A_{ij} , B_{ij} , C_{ij}$ها یک بلوک $k*k$ خواهند بود و باید آن‌ها را به صورت سطری در خانه‌های پشت سر هم حافظه نوشت. برای مثال اگر ماتریس $A$ به صورت زیر باشد:
+$$ A = \begin{bmatrix}
+1& 2 & 3\\
+4& 5 & 6
+\end{bmatrix} $$
+
+و در صورتی که 
+$k=2$
+و به عبارتی بلوک‌ها $2*2$ باشند \lr{CPU} باید آن را به صورت زیر در حافظه قرار دهد:
+
+\begin{table}[h]
+	\centering
+	\begin{tabular}{clll}
+		\hline
+		\multicolumn{4}{|c|}{Config}                                          \\ \hline
+		\multicolumn{4}{|c|}{Status}                                          \\ \hline
+		\multicolumn{4}{|c|}{1}                                        \\ \hline
+		\multicolumn{4}{|c|}{2}                                        \\ \hline
+		\multicolumn{4}{|c|}{4}                                        \\ \hline
+		\multicolumn{4}{|c|}{5}                                        \\ \hline
+		
+		\multicolumn{4}{|c|}{3}                                        \\ \hline
+				\multicolumn{4}{|c|}{0}                                        \\ \hline
+					\multicolumn{4}{|c|}{6}                                        \\ \hline
+										\multicolumn{4}{|c|}{0}                                        \\ \hline
+				\multicolumn{4}{|c|}{$\vdots$}                                        \\ \hline
+		\multicolumn{4}{|l|}{\cellcolor[HTML]{595959}{\color[HTML]{595959}aaaaaaaaaaaaaaaaaaaaa }} \\ \hline   
+	\end{tabular}
+\end{table}
+
+به عبارتی وظیفه‌ی بلوک کردن ماتریس و همچنین صفر قرار دادن خانه‌های اضافی به عهده‌ی \lr{CPU} خواهد بود. \\ 
+همچنین \lr{CPU} باید اولین خانه‌ی حافظه را که مربوط به کانفیگ می‌باشد به صورت زیر از اعداد پر کند:
+
+\begin{table}[h]
+	\centering
+	\begin{tabular}{|c|c|c|c|}
+				\hline
+				$\lambda$ & $\gamma$ & $\mu$ & $\theta$ \\ \hline
+	\end{tabular}
+\end{table}
+که هر کدام ۸بیت خواهند بود و مقادیر این پارامتر‌ها در 
+\autoref{2}
+مشخص شده است و البته باید توجه داشته باشید که مقدار $\theta$ نیز از رابطه‌ی زیر محاسبه می‌شود:
+\begin{equation}
+	\theta = \dfrac{\lambda\gamma}{\text{\lr{\#Matrix Processors}}}
+\end{equation}
+
+همچنین دومین خانه‌ی حافظه که مربوط به \lr{Status} می‌باشد مطابق شکل زیر می‌باشد.
+
+\begin{table}[h]
+	\centering
+	\begin{tabular}{|c|c|c|c|c|}
+		\hline
+		\lr{CPU Ready} & \lr{MP Acknowledge} & $\dots$ &\lr{CPU Acknowledge} & \lr{MP Ready}\\ \hline
+	\end{tabular}
+\end{table}
+وظیفه‌ی \lr{CPU} این است که بعد از قرار دادن ورودی‌ها و تنظیم کردن \lr{Config} مقدار بیت \lr{CPU Ready} را فعال کند و بعد از این که بیت \lr{Acknowledge} را از طرف ضرب کننده‌ی ماتریسی دریافت کرد به کارش ادامه دهد بعد از تمام شدن عملیات ماتریسی بیت \lr{MP Ready} فعال می‌شود و \lr{CPU} می‌تواند بلاک‌های ماتریس خروجی را از مکانی که در مموری مربوط به خروجی‌ها می‌باشد استخراج کند.
+
+
 \subsection{دیاگرام‌های بلوکی سخت‌افزار}
 \subsection{توصیف ماجول‌ها}
 \subsection{ساختار درختی سیستم}
+\end{section-container}
 
 \pagebreak
 \section{روند شبیه‌سازی و نتایج حاصل}
