@@ -25,4 +25,6 @@ Coprocessor/work
 *.aux
 *.log
 *.gz
+*.fls
+*.fdb_latexmk
 GoldenModel/venv
