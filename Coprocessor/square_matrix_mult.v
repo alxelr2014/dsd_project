@@ -1,10 +1,8 @@
 
 module square_matrix_mult #(parameter size , parameter cell_width , parameter address_width ,parameter width = cell_width * size )
        (input in_ready ,
-        input [width-1:0] in_row_a,
-        input [width - 1: 0] in_col_b,
-	input in_a_ready,
-	input in_b_ready,
+        input [width-1:0] in_data,
+	input in_data_ready,
 	input out_ack,
         input in_clk,
         input in_reset,
@@ -16,7 +14,7 @@ module square_matrix_mult #(parameter size , parameter cell_width , parameter ad
         output reg [width - 1: 0] out_cell_c,
         output reg out_ready );
 
-        localparam s_IDLE = 3'b000 , s_TAKEA = 3'b001 , s_TAKEB = 3'b010 , s_MULT = 3'b011, s_ADD = 3'b100 , s_DONE = 3'b101;
+        localparam s_IDLE = 3'b000 , s_TAKEA = 3'b001 , s_TAKEB = 3'b010 , s_OP = 3'b011,s_DONE = 3'b100;
 
 
         reg [cell_width - 1:0] r_counter_level1;
@@ -24,36 +22,22 @@ module square_matrix_mult #(parameter size , parameter cell_width , parameter ad
         
         reg [2:0] r_states;
 
-        reg [width - 1: 0] r_adder_in;
-        reg r_adder_in_ready, r_adder_reset, r_adder_ack;
-        wire n_adder_out_ready;
-        wire [width - 1: 0] n_adder_out_z;
-
-	column_adder  #(.size(size)  , .cell_width (cell_width), .width(width)) col_adder_unit (
-	.in_col (r_adder_in),
-	.in_clk (in_clk),
-	.in_reset (r_adder_in),
-	.in_ready (r_adder_in_ready),
-	.out_ack (r_adder_ack),
-	.out_ready (n_adder_out_ready),
-	.out_cell (n_adder_out_z) );
+        reg [width - 1: 0] r_proc_in_a;
+	reg [width - 1: 0] r_proc_in_b;
+        reg r_proc_in_ready, r_proc_reset, r_proc_ack;
+        wire n_proc_out_ready;
+        wire [width - 1: 0] n_proc_out_z;
 
 
-        reg [width - 1: 0] r_mult_in_a;
-        reg [width - 1: 0 ] r_mult_in_b;
-        reg r_mult_ready, r_mult_ack , r_mult_reset;
-        wire n_mult_out_ready;
-        wire [width - 1: 0] n_mult_out_z;
-
-	column_multiplier #(.size(size)  , .cell_width (cell_width), .width(width)) col_mult_unit(
-	.in_a(r_mult_in_a),
-	.in_b(r_mult_in_b),
-	.in_clk (in_clk),
-	.in_reset (r_mult_reset),
-	.in_ready(r_mult_in_ready),
-	.out_ack (r_mult_ack),
-	.out_ready (n_mult_out_ready),
-	.out_c (n_mult_out_z) );
+column_processor #(.size(size)  , .cell_width (cell_width), .width(width)) col_proc
+       (.in_ready (r_proc_in_ready) ,
+        .in_row_a (r_proc_in_a),
+        .in_col_b (r_proc_in_b),
+	.out_ack (r_proc_ack),
+        .in_clk (in_clk),
+        .in_reset (r_proc_reset),
+	.out_cell_c (n_proc_out_z),
+        .out_ready (n_proc_out_ready) );
 
         always @(negedge in_reset) begin
 	out_reg_address <= 0;
@@ -67,154 +51,196 @@ module square_matrix_mult #(parameter size , parameter cell_width , parameter ad
 	r_counter_level1 <= 0;
         r_counter_level2 <= 0;
    
-        r_adder_in <= 0;
-        r_adder_in_ready <= 0;
- 	r_adder_reset <= 1;
- 	r_adder_ack <= 0;
-
-	r_mult_in_a <= 0;
-        r_mult_in_b <= 0;
-        r_mult_ready <=0;
-	r_mult_ack <=0 ;
-	r_mult_reset<= 1;
-	
+	r_proc_in_a <= 0;
+	r_proc_in_b <= 0;
+        r_proc_in_ready <= 0;
+	r_proc_reset <= 0;
+	r_proc_ack <= 0;
 	r_states <= s_IDLE;
         end
 	
 	always @(posedge in_clk) begin 
-	out_reg_address <= 0;
-	out_type <= 0;
-	out_matrix <= 0;
-	out_read_en <= 0;
-	out_wirte_en <= 0;
-        out_cell_c <= 0;
-        out_ready <= 0;
-
-	r_counter_level1 <= 0;
-        r_counter_level2 <= 0;
-   
-        r_adder_in <= 0;
-        r_adder_in_ready <= 0;
- 	r_adder_reset <= 1;
- 	r_adder_ack <= 0;
-
-	r_mult_in_a <= 0;
-        r_mult_in_b <= 0;
-        r_mult_ready <=0;
-	r_mult_ack <=0 ;
-	r_mult_reset<= 1;
-		
-	r_states <= s_IDLE;
-
 	case (r_states)
 	s_IDLE: begin 
-		r_adder_reset <=0;
-		r_mult_reset <= 0;
+		out_reg_address <= 0;
+		out_type <= 0;
+		out_matrix <= 0;
+		out_read_en <= 0;
+		out_wirte_en <= 0;
+        	out_cell_c <= 0;
+        	out_ready <= 0;
+
+		r_counter_level1 <= 0;
+        	r_counter_level2 <= 0;
+   
+		r_proc_in_a <= 0;
+		r_proc_in_b <= 0;
+        	r_proc_in_ready <= 0;
+		r_proc_reset <= 1;
+		r_proc_ack <= 0;
+		r_states <= s_IDLE;
 		if (in_ready)
 			r_states <= s_TAKEA;
 		end
 	s_TAKEA: begin
+
+        	out_cell_c <= 0;
+        	out_ready <= 0;
+
+        	r_counter_level2 <= 0;
+
+		r_proc_in_b <= 0;
+        	r_proc_in_ready <= 0;
+		r_proc_reset <= 1;
+		r_proc_ack <= 0;
+
 		if (r_counter_level1 < size) begin
-		if (!in_a_ready) begin
+		if (!in_data_ready) begin
 			out_reg_address <= r_counter_level1 * size;
 			out_type <= 2'b01; //row
 			out_matrix <= 2'b00; //matrix A
 			out_read_en <= 1;
 			out_wirte_en <= 0;
+			r_proc_in_a <= 0;
 			r_counter_level1 <= r_counter_level1;
 			r_states <= s_TAKEA;
 		end
 		else begin
-			r_mult_in_a <= in_row_a;
+			out_reg_address <= 0;
+			out_type <= 0;
+			out_matrix <= 0;
+			out_read_en <= 0;
+			out_wirte_en <= 0;
+			r_proc_in_a <= in_data;
 			r_counter_level1 <= r_counter_level1;
 			r_states <= s_TAKEB;
 		end
 		end
 		else begin //when it is done
+			out_reg_address <= 0;
+			out_type <= 0;
+			out_matrix <= 0;
+			out_read_en <= 0;
+			out_wirte_en <= 0;
+			r_proc_in_a <= 0;
 			r_counter_level1 <= 0;
 			out_ready <= 1;
 			r_states <= s_DONE;
 		end 
 		end
 	s_TAKEB: begin
+        	out_cell_c <= 0;
+        	out_ready <= 0;
+		
+		r_proc_reset <= 1;
+		r_proc_ack <= 0;
 		if (r_counter_level2 < size) begin
-		if (!in_b_ready) begin
+		if (!in_data_ready) begin
 			out_reg_address <= r_counter_level2;
 			out_type <= 2'b10; //col
 			out_matrix <= 2'b01; //matrix B
 			out_read_en <= 1;
 			out_wirte_en <= 0;
-			r_mult_in_a <= r_mult_in_a;
+		
 			r_counter_level1 <= r_counter_level1;
 			r_counter_level2 <= r_counter_level2;
+
+			r_proc_in_a <= r_proc_in_a;
+			r_proc_in_b <= 0;
+        		r_proc_in_ready <= 0;
 			r_states <= s_TAKEB;
 		end
 		else begin
-			r_mult_in_a <= r_mult_in_a;
-			r_mult_in_b <= in_col_b;
+			out_reg_address <= 0;
+			out_type <= 0;
+			out_matrix <= 0;
+			out_read_en <= 0;
+			out_wirte_en <= 0;
+
 			r_counter_level1 <= r_counter_level1;
 			r_counter_level2 <= r_counter_level2;
-			r_mult_ready <=1;
-			r_mult_ack <=0 ;
-			r_mult_reset<= 1;
-			r_states <= s_MULT;
+			
+			r_proc_in_a <= r_proc_in_a;
+			r_proc_in_b <= in_data;
+        		r_proc_in_ready <= 1;
+			r_states <= s_OP;
 		end
 		end
 		else begin //when it is done with a row
+			out_reg_address <= 0;
+			out_type <= 0;
+			out_matrix <= 0;
+			out_read_en <= 0;
+			out_wirte_en <= 0;
+
+			r_counter_level1 <= r_counter_level1+ 1;
 			r_counter_level2 <= 0;
-			r_mult_in_a <= 0;
-			r_counter_level1 <= r_counter_level1 + 1;
+			
+			r_proc_in_a <= 0;
+			r_proc_in_b <= 0;
+        		r_proc_in_ready <= 0;
+
 			r_states = s_TAKEA;
 		end 
 		end
-	s_MULT: begin
-		if (n_mult_out_ready) begin
-			r_counter_level1 <= r_counter_level1;
-			r_counter_level2 <= r_counter_level2;
-			r_mult_in_a <= r_mult_in_a;
-			r_mult_ready <= 0;
-			r_mult_ack <=1 ;
-			r_mult_reset<= 0;
-			r_adder_in <= n_mult_out_z;
-        		r_adder_in_ready <= 1;
- 			r_adder_reset <= 1;
- 			r_adder_ack <= 0;
-			r_states <= s_ADD;
-		end
-		else begin
-			r_mult_in_a <= r_mult_in_a;
-			r_counter_level1 <= r_counter_level1;
-			r_counter_level2 <= r_counter_level2;
-			r_states <= s_MULT;
-		end
-		
-		end
-	s_ADD: begin
-		if (n_adder_out_ready) begin
+	s_OP: begin
+
+        	out_ready <= 0;
+
+		r_proc_reset <= 1;
+		if (n_proc_out_ready) begin
+			
 			out_reg_address <= r_counter_level1 * size + r_counter_level2;
 			out_type <= 2'b00; //cell
 			out_matrix <= 2'b10; //matrix C
 			out_read_en <= 0;
-			out_wirte_en <= 1;
+			out_wirte_en <= 1'b1;
+        		out_cell_c <= n_proc_out_z;
+        		
 			r_counter_level1 <= r_counter_level1;
 			r_counter_level2 <= r_counter_level2 + 1;
-			r_mult_in_a <= r_mult_in_a;
-			out_cell_c <= n_adder_out_z;
-        		r_adder_in_ready <= 0;
- 			r_adder_reset <= 0;
- 			r_adder_ack <= 1;
+			r_proc_in_a <= r_proc_in_a;
+			r_proc_in_b <= 0;
+        		r_proc_in_ready <= 0;
+			r_proc_ack <= 1;
 			r_states <= s_TAKEB;
 		end
 		else begin
+			out_reg_address <=0;
+			out_type <= 0; 
+			out_matrix <= 0; 
+			out_read_en <= 0;
+			out_wirte_en <= 0;
+        		out_cell_c <= 0;
+        		
 			r_counter_level1 <= r_counter_level1;
 			r_counter_level2 <= r_counter_level2;
-			r_mult_in_a <= r_mult_in_a;
-			r_states <= s_ADD;
+			r_proc_in_a <= r_proc_in_a;
+			r_proc_in_b <= r_proc_in_b;
+        		r_proc_in_ready <= 0;
+			r_proc_ack <= 0;
+			r_states <= s_OP;
 		end
 		
 		end
 	s_DONE: begin
-		out_ready <= 1;
+		out_reg_address <= 0;
+		out_type <= 0;
+		out_matrix <= 0;
+		out_read_en <= 0;
+		out_wirte_en <= 0;
+        	out_cell_c <= 0;
+        	out_ready <= 1;
+
+		r_counter_level1 <= 0;
+        	r_counter_level2 <= 0;
+   
+		r_proc_in_a <= 0;
+		r_proc_in_b <= 0;
+        	r_proc_in_ready <= 0;
+		r_proc_reset <= 1;
+		r_proc_ack <= 0;
+
 		if (out_ack)
 			r_states <= s_IDLE;
 		end
