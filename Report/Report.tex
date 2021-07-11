@@ -108,6 +108,25 @@ $A_{mr} \times B_{rn} = C_{mn}$
 
 \subsection{مراجع مورد استفاده}
 
+\begin{latin}
+\begin{thebibliography}{}
+	
+	\bibitem{parallel} 
+	Abhishek Kumar : Scalability of Parallel Algorithms for Matrix Multiplication
+	
+	\bibitem{parallel} 
+	Patricia Ortega : Parallel Algorithm for Dense Matrix Multipication
+	
+	\bibitem{area} 
+	Ju-wook Jang, Seonil Choi and Viktor K. Prasanna : Area and Time Efficient Implementations of Matrix Multiplication on FPGAs
+	
+	\bibitem{cannon}
+	Cannon's algorithm, Wiki-pedia\\ https://en.wikipedia.org/wiki/Cannon\%27s\_algorithm
+	
+	
+\end{thebibliography}
+\end{latin}
+
 \end{section-container}
 
 \begin{section-container}{توصیف معماری سیستم}
@@ -259,28 +278,64 @@ $k=2$
 	
 \begin{figure}[h]
 	\centering
-	\includegraphics[width=0.4\linewidth]{source/fsm_ar.jpg}
+	\includegraphics[width=0.35\linewidth]{source/fsm_ar.jpg}
 	\caption{\lr{Arbiter Fsm}}
 \end{figure}
 
 نحوه‌ی عملکرد این ماژول به این صورت است که یک صف بااهمیت از ماژول‌هایی که آن وصل هستند را نگه می‌دارم و در صورتی که ورودی \lr{Request} آن یک باشد به بااهمیت‌ترین ماژول متصل به خود اجازه‌ی دسترسی به حافظه را می‌دهد. سپس آن ماژول می‌تواند از مموری استفاده کند.
 	
 	\item 
-	\lr{Main Control Unit}
+	\lr{Control Unit}:
+	این ماژول وظیفه‌ی محاسبه‌ی حاصل جمع زیر را دارد:
+	$$ C_{ij} = \sum_{x=0}^\mu A_{ix}B_{xj} $$
+	در واقع این ماژول با پیاده کردن دیاگرام حالت زیر اندیس‌ها را تغییر می‌دهد و هر بار $A_{ix},B_{xj}$ جدید را از حافظه‌ می‌خواند و سپس آن را به واحد ضرب کننده‌ی ماتریسی می‌دهد و پس از اینکه جواب نهایی حاضر شد آن را در حافظه می‌نویسد.
+	\begin{figure}[h]
+		\centering
+		\includegraphics[width=0.4\linewidth]{source/fsm_cu.jpg}
+		\caption{\lr{CU Fsm}}
+	\end{figure}
+توجه می‌کنیم که در حالت \lr{Receive} به اندازه‌ی
+ $2k^2$
+ باید صبر کنیم تا تمام بیت‌های مورد نیازمان نوشته شود همچنین این حالت به دو حالت درونی \lr{Receive A} و \lr{Receive B} تقسیم بندی می‌شود.
+	
 	\item 
-	\lr{Control Unit}
+	\lr{Main Control Unit}:
+	این واحد وظیفه‌ی پخش کردن بلاک‌های $C_{ij}$ بین پردازنده‌ها را دارد به نمودار حالت زیر توجه می‌کنیم:
+	
+	\begin{figure}[h]
+		\centering
+		\includegraphics[width=0.4\linewidth]{source/main_cu_fsm.png}
+		\caption{\lr{Main CU Fsm}}
+	\end{figure}
+	
+	همان طور که از این نمودار حالت مشخص است هرگاه کلمه‌ی \lr{status} در حافظه نشان‌ دهنده \lr{Cpu\_Ready} باشد از حالت اولیه‌ خارج می‌شویم و از \lr{Arbiter} درخواست می‌کنیم که حافظه‌ را در اختیار ما بگذارد، سپس با داشتن کانفیگ می‌توانیم بین \lr{Processor}‌‌های مختلف اندیس‌ها را پخش کنیم. این کار به اندازه‌ی $\theta$بار انجام می‌دهیم تا نهایتا همه‌ی $C_{ij}$‌ها توسط پردازنده‌ها محاسبه شده و در مموری ذخیره شود. سپس با درخواست از \lr{Arbiter} دسترسی به حافظه را بدست می‌آوریم و کلمه‌ی \lr{status} را تغییر می‌دهیم تا \lr{CPU} متوجه به پایان رسیدن عملیات شود.
+	
 	\item 
-	\lr{Processor Unit}
+	\lr{Processor Unit}:
+	این واحد متشکل از \lr{Control Unit} و \lr{Matrix Multiplier} و \lr{Register File} می‌باشد و وظیفه‌ی برقراری ارتباط بین آنها را دارد. به طور خلاصه این واحد دستورات کنترل یونیت را به مموری می‌فرستد و داده‌ها را درون رجیسترفایل می‌ریزد و یا از آن می‌خواند و \lr{Matrix Multiplier} با استفاده از داده‌های موجود در رجیستر فایل ضرب ماتریسی را انجام می‌دهد و نهایتا خروجی را درون رجیستر فایل می‌ریزد. سپس با استفاده از دستورات واحد کنترلی مقادیر موجود در رجیستر فایل به حافظه انتقال پیدا می‌کند.
 	\item 
-	\lr{Matrix Multiplier}
-	\item 
-	\lr{Matrix Adder}
+	\lr{Matrix Multiplier}:
+	این واحد وظیفه‌ی ضرب ماتریسی دو ماتریس $k*k$ را دارد به نمودار حالت زیر توجه کنید:
+	\begin{figure}[h]
+		\centering
+		\includegraphics[width=0.5\linewidth]{source/square_matrix.png}
+		\caption{\lr{Multiplier Fsm}}
+	\end{figure}
+	در حالت اول با دریافت بیت \lr{in\_Ready} که از طرف واحد کنترلی می‌آید مشخص می‌شود که باید مراحل ضرب کردن را آغاز کند و این ماژول با استفاده از رجیستر‌های میانی زمان پایان عملیات ضرب را متوجه می‌شود.
 	\item 
 	\lr{Index To Address Transformer}
+	این واحد با داشتن کانفیگ و همچنین ورودی‌های مشخص کننده‌ی دیگر باید بتوانند آدرس $A_{ix}$ یا $B_{xj}$ و یا $C_{ij}$ را پیدا کند بیت‌های ورودی این واحد شامل اندیس سطر و ستون و ۳ بیت دیگر که مشخص می‌کند باید آدرس کدام یک از $A,B,C$ را پیدا کند.
 \end{itemize}
 
-
+\pagebreak
 \subsection{ساختار درختی سیستم}
+
+	\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.87\linewidth]{source/tree.png}
+	\caption{\lr{Design Hierarchy}}
+\end{figure}
+
 \end{section-container}
 
 \pagebreak
