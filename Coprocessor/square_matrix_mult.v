@@ -238,7 +238,7 @@ column_processor #(.size(size)  , .cell_width (cell_width), .width(width)) col_p
 		r_proc_in_a <= 0;
 		r_proc_in_b <= 0;
         	r_proc_in_ready <= 0;
-		r_proc_reset <= 1;
+		r_proc_reset <= 0;
 		r_proc_ack <= 0;
 
 		if (out_ack)
