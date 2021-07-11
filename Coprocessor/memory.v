@@ -1,5 +1,5 @@
 
-module memory #(parameter size, parameter blocks , parameter log_size , parameter cell_width = 32 , localparam width = blocks * cell_width)
+module memory #(parameter size, parameter blocks , parameter log_size , parameter cell_width = 32 , parameter width = blocks * cell_width)
 (input [log_size - 1: 0] in_address ,
  input [width - 1: 0] in_data,
  input in_read_en ,

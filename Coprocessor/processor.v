@@ -8,6 +8,7 @@ module processor #(parameter size , parameter cell_width , parameter register_ad
  input in_index_ready,
  input [index_width - 1 : 0] in_mu,
  input [width - 1: 0] in_mem_data,
+ input [cell_width - 1:0] in_Config,
  output out_index_ack,
  output out_result_ready,
  output out_request,
@@ -80,6 +81,7 @@ CU #(.k (size), .index_width(index_width), .memory_size(memory_size), .memory_si
     .i_Column_Index (in_col_index), // j in C_ij block
     .i_Indexes_Ready (in_index_ready), // main CU send this signal to show indexes are ready
     .i_mu (in_mu),
+	.i_Config(in_Config),
     .o_Indexes_Received (out_index_ack), // send to Main CU for Acknowledge.
     .o_Result_Ready (out_result_ready), // send to Main CU and back to idle state
 
