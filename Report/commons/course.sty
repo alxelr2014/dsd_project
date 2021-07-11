@@ -63,12 +63,12 @@
 
 \lstset{style=mystyle}
 
- \settextfont[Path=fonts/,BoldFont={XB Zar bold.ttf}]{XB Zar.ttf}
+ \settextfont[Scale=1, Path=fonts/,BoldFont={XB Zar bold.ttf}]{XB Zar.ttf}
 
 
-\setlatintextfont[Scale=1.0,
- BoldFont={LiberationSerif-Bold.ttf}, 
- ItalicFont={LiberationSerif-Italic.ttf}]{LiberationSerif-Regular.ttf}
+\setlatintextfont[Scale=1,
+BoldFont={LiberationSerif-Bold.ttf}, 
+ItalicFont={LiberationSerif-Italic.ttf}]{LiberationSerif-Regular.ttf}
 
 
 
@@ -136,7 +136,7 @@ title=#2,#1}
 
 \defpersianfont\fehrestTitle[Scale=2.5,Path=fonts/]{IRNazaninBold.ttf}
 
-\defpersianfont\fehrestContent[Scale=1.5,Path=fonts/]{IRNazanin.ttf}
+\defpersianfont\fehrestContent[Scale=1.5,Path=fonts/]{XB Zar.ttf}
 
 
 \sectionfont{\color{sectionColor}}  % sets colour of sections
@@ -198,6 +198,7 @@ title=#2,#1}
 
 \newcommand{\pageheader}{
 %%% header of pages
+	\setlength{\headheight}{55pt}
 	\pagestyle{fancy}
 	\fancyhf{}
 	\fancyfoot{}
