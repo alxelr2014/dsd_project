@@ -5,8 +5,8 @@ module main_CU #(
 	parameter memory_size = 1024,
 	parameter memory_size_log = 10)
 	(
-    input i_Data_Ready, // status in memory 
-    input i_Grant, // show to having grant
+    input i_Data_Ready,	// status in memory 
+    input i_Grant,		// show to having grant
     input i_Clock,
     inout[31:0] io_Memory_Data,
     input i_Indexes_Received,
@@ -63,6 +63,7 @@ always @(posedge i_Clock)
 			begin
 				if(i_Data_Ready == 1'b1) begin
 			    	r_State <= s_Request_Config_Grant;
+					o_Grant_Request <= 1;
 			    end
 				else r_State <= s_Idle;
 			end
@@ -75,10 +76,6 @@ always @(posedge i_Clock)
 					o_Memory_Address <= 0;
 					r_Memory_Write <= 0;
 					r_Read_Counter <= 0;	
-				end else begin
-					o_Grant_Request <= 1'b1;
-					r_State <= s_Request_Config_Grant;
-					o_Memory_Address <= Z;
 				end
 			end
 
@@ -91,6 +88,7 @@ always @(posedge i_Clock)
 				end else begin
 					r_Read_Counter <= 0;
 					//split config
+					o_Config <= r_Data_In;
 					r_Lambda <= r_Data_In[greek_size-1:0];
 					r_Gamma <= r_Data_In[2*greek_size-1:greek_size];
 					r_mu <= r_Data_In[3*greek_size-1:2*greek_size];
@@ -144,6 +142,7 @@ always @(posedge i_Clock)
 						r_State <= s_Scatter;
 					end else begin
 						r_State <= s_Request_Status_Grant;
+						o_Grant_Request <= 1;
 						r_Scatter_Counter <= 0;
 					end
 				end else begin
@@ -159,9 +158,6 @@ always @(posedge i_Clock)
 					o_Memory_Address <= 1;
 					r_Memory_Write <= 0;
 					r_Read_Counter <= 0;
-				end else begin
-					o_Grant_Request <= 1'b1;
-					r_State <= s_Request_Status_Grant;
 				end
 			end
 
