@@ -61,12 +61,13 @@ module main_control_unit_tb;
 
     //monitoring states
     initial begin
-        $monitor("time = %d | state = %b\n\t- Grant_Request:%b \n\t- Config_Data=%b \n\t- Memory_Addres=%b \n\t- Write_Enable=%b \n\t- Indexes_Ready=%b \n\t- RowIndex=%d \n\t- ColumnIndex=%d",
+        $monitor("time = %d | state = %b\n\t- Grant_Request:%b \n\t- Config_Data=%b \n\t- Memory_Addres=%b \n\t- Write_Enable=%b \n\t- IO_Memory_Data=%b \n\t- Indexes_Ready=%b \n\t- RowIndex=%d \n\t- ColumnIndex=%d",
         $realtime, main_control_unit.r_State, 
         t_o_Grant_Request,
         t_o_Config,
         t_o_Memory_Address,
         t_o_Write_Enable,
+        t_io_Memory_Data,
         t_o_Indexes_Ready,
         t_o_Row_Index,
         t_o_Column_Index
@@ -94,27 +95,60 @@ module main_control_unit_tb;
         #(1.5*half_cc)
         //time = 7
 
-        #(0.5*half_cc)
+        #(0.1*half_cc)
         r_Write_Port <= 1;
-        #(0.5*half_cc)
+        #(0.1*half_cc)
         m_Config_Data <= 32'b00000011000000110000001100000011;
-
+        #(0.8*half_cc)
 
         #(half_cc)
         //we have config data - time = 9
-        $display("*****%b", main_control_unit.r_Data_In);
-        $display("*****%b", main_control_unit.r_Gamma);
-        $display("*****%b", main_control_unit.r_Lambda);
+
         #(2*half_cc)
         
         repeat (4) begin
-            #(half_cc)
+            #(0.1*half_cc)
             m_Indexes_Received <= 1;
             #(2*half_cc)
             m_Indexes_Received <= 0;
-            #(half_cc);
+            #(1.9*half_cc);
         end
+
+        //time = 27
+        #(0.1*half_cc)
+        m_Result_Ready <= 1;
             
+        #(1.9*half_cc)
+        repeat (4) begin
+            #(0.1*half_cc)
+            m_Indexes_Received <= 1;
+            #(2*half_cc)
+            m_Indexes_Received <= 0;
+            #(1.9*half_cc);
+            m_Result_Ready <= 0;
+        end
+        //time = 45
+        // m_Result_Ready <= 0;
+        #(0.1*half_cc)
+        m_Result_Ready <= 1;
+            
+        #(1.9*half_cc)
+        //time = 47
+
+        #(0.1*half_cc)
+        m_Indexes_Received <= 1;
+        #(2*half_cc)
+        m_Indexes_Received <= 0;
+        #(1.9*half_cc);
+        //time = 51
+        #(2*half_cc)
+        m_Config_Data <= 32'b10000000000000000000000000000000;
+
+        m_Data_Ready <= 0;
+        r_Write_Port <= 1;
+        #10
+
+
         $finish;
     end
     

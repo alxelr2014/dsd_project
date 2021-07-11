@@ -132,38 +132,45 @@ always @(posedge i_Clock or negedge i_Reset) begin
 
 			s_Scatter: begin
 					//TODO what if we don't have enough blocks?
-					if (r_Processor_Counter < p - 1) begin
+					if (i_Indexes_Received == 1) begin
 						//generate rwo and column number for proccessors
 						/*
 						* increase row index till it goes beyound matrix width,
 						* then increase column index and make row index zero
 						*/
 						//check if proccessor received this signals
-						if (i_Indexes_Received == 1) begin
+						if (r_column + 1 >= r_Gamma) begin
+							r_column <= 0;
+							r_row <= r_row + 1;
+						end else begin
+							r_column <= r_column + 1;
+						end
+						if (r_Processor_Counter < p - 1) begin
 							o_Indexes_Ready <= o_Indexes_Ready << 1;
 							r_Processor_Counter <= r_Processor_Counter + 1;
 
-							if (r_column + 1 >= r_Gamma) begin
-								r_column <= 0;
-								r_row <= r_row + 1;
-							end else begin
-								r_column <= r_column + 1;
-							end
+							// if (r_column + 1 >= r_Gamma) begin
+							// 	r_column <= 0;
+							// 	r_row <= r_row + 1;
+							// end else begin
+							// 	r_column <= r_column + 1;
+							// end
 						end else begin
-							r_State <= s_Scatter;
+							r_Processor_Counter <= 0;
+							o_Indexes_Ready <= 1;
+							r_State <= s_Wait_For_Ready;
+							r_Scatter_Counter <= r_Scatter_Counter + 1;
 						end
 					end else begin
-						r_Processor_Counter <= 0;
-						o_Indexes_Ready <= 1;
-						r_State <= s_Wait_For_Ready;
+						r_State <= s_Scatter;
 					end			
 				end
 
 			s_Wait_For_Ready: begin
 					if (i_Result_Ready == 1) begin
-						if (r_Scatter_Counter < r_Theta - 1) begin
+						if (r_Scatter_Counter < (r_Theta - 1)) begin
 							r_State <= s_Scatter;
-						end else if (r_Scatter_Counter == r_Theta - 1) begin
+						end else if (r_Scatter_Counter == (r_Theta - 1)) begin
 							r_Processor_Counter <= r_Theta * p - r_Gamma * r_Lambda;	//TODO is this synthesizable?
 							r_State <= s_Scatter;
 						end else begin
@@ -185,28 +192,37 @@ always @(posedge i_Clock or negedge i_Reset) begin
 						r_Read_Counter <= 0;
 					end else begin
 						o_Memory_Address <= 'bz;
+						r_State <= s_Request_Status_Grant;
 						// o_Write_Enable <= Z; //TODO should we?
 					end
 				end
 
 			s_Change_Status: begin
 					if (r_Status_Counter == 0) begin
-						if (r_Read_Counter == 0) begin
-							r_State <= s_Change_Status;
-							r_Read_Counter <= 1;
-						end else begin
-							r_State <= s_Change_Status;
-							r_Status_Counter <= 1;
-							r_Data_Out <= {r_Data_In[31:1], 1'b1};
-							r_Memory_Write <= 1;
-							o_Write_Enable <= 1;
-							r_Read_Counter <= 0;
-						end
+						r_State <= s_Change_Status;
+						r_Status_Counter <= 1;
+						r_Data_Out <= r_Data_In + 1;
+						r_Memory_Write <= 1;
+						o_Write_Enable <= 1;
+						r_Read_Counter <= 0;
+						// if (r_Read_Counter == 0) begin
+						// 	r_State <= s_Change_Status;
+						// 	r_Read_Counter <= 1;
+						// end else begin
+						// 	r_State <= s_Change_Status;
+						// 	r_Status_Counter <= 1;
+						// 	r_Data_Out <= {r_Data_In[31:1], 1'b1};
+						// 	r_Memory_Write <= 1;
+						// 	o_Write_Enable <= 1;
+						// 	r_Read_Counter <= 0;
+						// end
 					end else begin					
 						o_Grant_Request <= 0;
 						o_Memory_Address <= 'bz;
 						r_Read_Counter <= 0;
-						o_Write_Enable <= 0;
+						o_Write_Enable <= 'bz;
+						r_row <= 0;
+						r_column <= 0;
 						r_State <= s_Idle;
 					end
 				end
