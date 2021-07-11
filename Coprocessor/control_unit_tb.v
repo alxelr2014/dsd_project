@@ -12,6 +12,8 @@ module control_unit_tb;
     reg [7:0] mu;
     reg Partial_Output_Ready;
     reg reset;
+    reg [31:0] Config;
+
     wire AorB;
     wire Grant_Request;
     wire [1:0] RF_address;
@@ -24,7 +26,7 @@ module control_unit_tb;
     wire Memory_Read_Enable;
     wire [9:0] Memory_Address;
 
-    CU control_unit(.i_Reset(reset) ,.i_Clock(clk), .i_Grant(grant), .o_Grant_Request(Grant_Request),
+    CU control_unit(.i_Config(Config), .i_Reset(reset) ,.i_Clock(clk), .i_Grant(grant), .o_Grant_Request(Grant_Request),
     .o_RF_Address(RF_address), .o_RF_Write_Enable(RF_Write_Enable), .o_RF_Read_Enable(RF_Read_Enable),
     .o_AorB(AorB), .i_Row_Index(Row_Index), .i_Column_Index(Column_Index), .i_Indexes_Ready(Indexes_Ready),
     .i_mu(mu), .o_Indexes_Received(Indexes_Received), .o_Result_Ready(Result_Ready), .i_Partial_Output_Ready(Partial_Output_Ready),
@@ -50,16 +52,15 @@ module control_unit_tb;
         Column_Index <= 6;
         mu <= 3;
         Indexes_Ready <= 1;
-        
+
         #(10*half_cc);
         grant <= 1;
 
         #(50*half_cc);
         Partial_Output_Ready <= 1;
 
-        #60
+        #46
         $finish;
-
     end
     
 endmodule

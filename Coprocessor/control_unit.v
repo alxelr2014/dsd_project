@@ -1,5 +1,4 @@
-
-
+`include "index_to_address.v"
 module CU #(parameter k = 2, parameter index_width = 8, parameter memory_size = 1024, parameter memory_size_log = 10, parameter max_mu_log = 8, parameter log_k_2 = 2) (
     input i_Clock,
     input i_Reset,
@@ -18,6 +17,7 @@ module CU #(parameter k = 2, parameter index_width = 8, parameter memory_size = 
     input wire[index_width-1:0] i_Column_Index, // j in C_ij block
     input i_Indexes_Ready, // main CU send this signal to show indexes are ready
     input [max_mu_log-1:0] i_mu,
+    input [31:0] i_Config,
     output reg o_Indexes_Received, // send to Main CU for Acknowledge.
     output reg o_Result_Ready, // send to Main CU and back to idle state
 
@@ -40,13 +40,22 @@ reg[3:0] r_State;
 
 wire[index_width-1:0] w_Row_Index_To_Decode;
 wire[index_width-1:0] w_Column_Index_To_Decode;
+wire[2:0] w_Select_Hot_bit;
 
-assign w_Row_Index_To_Decod = (o_RF_Write_Enable)? r_Row_Index : (o_AorB)? r_x : r_Row_Index;
-assign w_Column_Index_To_Decode = (o_RF_Write_Enable)? r_Column_Index : (o_AorB)? r_Column_Index : r_x;
+assign w_Select_Hot_bit = (o_RF_Read_Enable)? 3'b100 : (o_AorB)? 3'b010 : 3'b001;
+assign w_Row_Index_To_Decode = (o_RF_Read_Enable)? r_Row_Index : (o_AorB)? r_x : r_Row_Index;
+assign w_Column_Index_To_Decode = (o_RF_Read_Enable)? r_Column_Index : (o_AorB)? r_Column_Index : r_x;
 
 assign o_RF_Address = r_Clock_Count;
 
-// index_to_address() // TODO Memory Addressing
+index_to_address #(.index_width(index_width) , .k(k) , .Log_Memory_Size(memory_size_log), .output_start(2*(memory_size-2)/3)) 
+index_to_address_transform(
+    .i_Config(i_Config),
+    .i_Row_Index(w_Row_Index_To_Decode),
+    .i_Column_Index(w_Column_Index_To_Decode),
+    .i_Type(w_Select_Hot_bit),
+    .o_Address(o_Memory_Address)
+);
 
 
 localparam  s_Idle = 3'b000;

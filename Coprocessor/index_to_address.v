@@ -1,4 +1,4 @@
-module index_to_address #(parameter index_width , parameter k , parameter Log_Memory_Size = 10, parameter output_start)(
+module index_to_address #(parameter index_width = 8 , parameter k = 2 , parameter Log_Memory_Size = 10, parameter output_start = 700)(
     input[31:0] i_Config,
     input[index_width - 1 : 0] i_Row_Index,
     input[index_width - 1: 0] i_Column_Index,
