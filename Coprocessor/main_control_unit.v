@@ -1,16 +1,19 @@
+`timescale 1ns/1ns
+
 module main_CU #(
 	parameter p = 4,
 	parameter index_width = 8,
 	parameter greek_size = 8,
 	parameter memory_size = 1024,
-	parameter memory_size_log = 10)
-	(
+	parameter memory_size_log = 10
+) (
     input i_Data_Ready,	// status in memory 
     input i_Grant,		// show to having grant
     input i_Clock,
-    inout[31:0] io_Memory_Data,
     input i_Indexes_Received,
     input i_Result_Ready,
+
+    inout[31:0] io_Memory_Data,
 
     output[31:0] o_Config,
     output o_Grant_Request,
@@ -36,6 +39,9 @@ reg[greek_size-1:0] r_mu;
 //scattering registers
 reg[index_width-1:0] r_row;
 reg[index_width-1:0] r_column;
+
+assign o_Row_Index = r_row;
+assign o_Column_Index = r_column;
 
 //bidirectional port
 wire[31:0] r_Data_In;	// r_Memory_Write = 0
