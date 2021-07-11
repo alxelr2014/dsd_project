@@ -2,7 +2,7 @@
 
 module CU #(parameter k = 2, parameter index_width = 8, parameter memory_size = 1024, parameter memory_size_log = 10, parameter max_mu_log = 8, parameter log_k_2 = 2) (
     input i_Clock,
-
+    input i_Reset,
     // Arbiter input output
     input i_Grant, // show that arbiter grants CU 
     output reg o_Grant_Request, // send to arbiter for request and hold it
@@ -55,7 +55,23 @@ localparam  s_Wait_For_PU = 3'b011;
 localparam  s_Request_Write_Grant = 3'b100;
 localparam  s_Wait_For_Write = 3'b101 ;
 
-always @(posedge i_Clock) begin
+always @(posedge i_Clock, negedge i_Reset) begin
+    if(~i_Reset) begin
+        r_Row_Index <= 0;
+        r_Column_Index <= 0;
+        r_x <= 0;
+        r_Clock_Count <= 0;
+        r_State <= 0;
+        o_Grant_Request <= 0;
+        o_RF_Write_Enable <= 0;
+        o_RF_Read_Enable <= 0;
+        o_AorB <= 0;
+        o_Indexes_Received <= 0;
+        o_Result_Ready <= 0;
+        o_PU_Start <= 0;
+        o_Memory_Write_Enable <= 0;
+        o_Memory_Read_Enable <= 0;
+    end
     case (r_State)
         s_Idle: begin
             if(i_Indexes_Ready) begin
@@ -78,7 +94,7 @@ always @(posedge i_Clock) begin
             end
         end
         s_Receive: begin
-            if(r_Clock_Count < k^2 - 1) begin
+            if(r_Clock_Count < (k^2 - 1)) begin
                 r_Clock_Count <= r_Clock_Count + 1;
             end else begin
                 if (o_AorB == 0) begin
@@ -97,7 +113,7 @@ always @(posedge i_Clock) begin
         s_Wait_For_PU: begin
             o_PU_Start <= 0; // Important
             if (i_Partial_Output_Ready) begin
-                if (r_x < i_mu - 1) begin
+                if (r_x < (i_mu - 1)) begin
                     r_x <= r_x + 1;
                     o_AorB <= 0;
                     o_Grant_Request <= 1;
