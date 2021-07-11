@@ -1,4 +1,4 @@
-`timescale 1ns/1ns
+
 
 module CU #(parameter k = 2, parameter index_width = 8, parameter memory_size = 1024, parameter memory_size_log = 10, parameter max_mu_log = 8, parameter log_k_2 = 2) (
     input i_Clock,
