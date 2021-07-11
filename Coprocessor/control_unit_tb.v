@@ -41,7 +41,7 @@ module control_unit_tb;
 
     initial begin
         $monitor(" time = %d | state = %b | grantRequest=%b | x=%d | resultReady=%b | Address=%d | send_to = %s | RF_Write_En = %b",
-         $realtime, control_unit.r_State, Grant_Request, control_unit.r_x, Result_Ready, control_unit.r_Clock_Count, sendTo, RF_Write_Enable);
+        $realtime, control_unit.r_State, Grant_Request, control_unit.r_x, Result_Ready, control_unit.r_Clock_Count, sendTo, RF_Write_Enable);
         reset = 1'b1;
 	    #(half_cc) reset = 1'b0;
     	#(half_cc) reset = 1'b1;

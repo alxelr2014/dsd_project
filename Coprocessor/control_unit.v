@@ -23,6 +23,7 @@ module CU #(parameter k = 2, parameter index_width = 8, parameter memory_size = 
 
     //PU input output
     input i_Partial_Output_Ready, // PU send to show A_ix * B_xj is ready
+    output reg o_P_Ready_Stable,
     output reg o_PU_Start, // send to PU, PU start working
 
     //Memory input output
@@ -71,6 +72,7 @@ always @(posedge i_Clock, negedge i_Reset) begin
         o_PU_Start <= 0;
         o_Memory_Write_Enable <= 0;
         o_Memory_Read_Enable <= 0;
+        o_P_Ready_Stable <= 0;
     end
     case (r_State)
         s_Idle: begin
@@ -83,6 +85,7 @@ always @(posedge i_Clock, negedge i_Reset) begin
                 o_Result_Ready <= 0;
                 o_Grant_Request <= 1;
                 o_Indexes_Received <= 1; // send Acknwoledge
+                o_P_Ready_Stable <= 0;
             end
         end 
         s_Request_Read_Grant: begin
@@ -107,12 +110,14 @@ always @(posedge i_Clock, negedge i_Reset) begin
                     o_Memory_Read_Enable <= 0;
                     r_State <= s_Wait_For_PU;
                     o_PU_Start <= 1;
+                    o_P_Ready_Stable <= 0;
                 end
             end
         end
         s_Wait_For_PU: begin
             o_PU_Start <= 0; // Important
             if (i_Partial_Output_Ready) begin
+                o_P_Ready_Stable <= 1;
                 if (r_x < (i_mu - 1)) begin
                     r_x <= r_x + 1;
                     o_AorB <= 0;

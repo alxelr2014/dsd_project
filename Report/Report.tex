@@ -202,9 +202,84 @@ $k=2$
 \end{table}
 وظیفه‌ی \lr{CPU} این است که بعد از قرار دادن ورودی‌ها و تنظیم کردن \lr{Config} مقدار بیت \lr{CPU Ready} را فعال کند و بعد از این که بیت \lr{Acknowledge} را از طرف ضرب کننده‌ی ماتریسی دریافت کرد به کارش ادامه دهد بعد از تمام شدن عملیات ماتریسی بیت \lr{MP Ready} فعال می‌شود و \lr{CPU} می‌تواند بلاک‌های ماتریس خروجی را از مکانی که در مموری مربوط به خروجی‌ها می‌باشد استخراج کند.
 
+با این تفاسیر تنها ورودی لازم به سخت‌افزار ریست آسنکرون می‌باشد. و با استفاده از مموری سخت‌‌افزار می‌تواند ورودی‌ها را از حافظه خوانده و آنها‌ را محاسبه کند.
+\subsection{کلاک سخت‌‌افزار}
+تمامی ماژول‌های این سخت‌افزار از جمله مموری و تمام ماژول‌های واحد حساب‌کننده‌ی ضرب ماتریسی به صورت سنکرون عمل می‌کنند و \lr{CDC} در این سخت‌افزار اتفاق نمی‌افتد.
 
 \subsection{دیاگرام‌های بلوکی سخت‌افزار}
-\subsection{توصیف ماجول‌ها}
+این سخت افزار شامل ماژول‌های زیر می‌باشد:
+\begin{itemize}
+	\item 
+	\lr{Memory}
+	\item 
+	\lr{Arbiter}
+	\item 
+	\lr{Main Control Unit}
+	\item 
+	\lr{Control Unit}
+	\item 
+	\lr{Processor Unit}
+	\item 
+	\lr{Matrix Multiplier}
+	\item 
+	\lr{Matrix Adder}
+	\item 
+	\lr{Index To Address Transformer}
+\end{itemize}
+
+	در اینجا به توصیف ورودی‌ خروجی‌ هر یک از آن‌ها و نحوه‌ی اتصال ‌آنها می‌پردازیم و در بخش بعد نحوه‌ی عملکرد هر یک را توضیح می‌دهیم:
+	
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.5\linewidth]{source/main_cu.png}
+	\caption{\lr{Main Control Unit}}
+\end{figure}
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.5\linewidth]{source/ControlUnit.png}
+	\caption{\lr{Control Unit}}
+\end{figure}
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.5\linewidth]{source/Memory.png}
+	\caption{\lr{Memory}}
+\end{figure}
+	
+\subsection{توصیف ماژول‌ها}
+
+\begin{itemize}
+	\item 
+	\lr{Memory}:
+	واحد مموری سخت‌افزار که مطابق با استانداردی که ابتدا آورده شده است. این واحد شامل یک باس خروجی داده است که ماژول‌ها می‌توانند از آن استفاده کنند. همچنین دارای یک باس ورودی و باس آدرس می‌باشد که \lr{Arbiter} تعیین می‌کند که کدام ماژول حق استفاده از این باس ‌ها و همچنین حق استفاده از \lr{enable}های‌ خواندن و نوشتن را دارد.
+	\item 
+	\lr{Arbiter}
+	این واحد نقش پخش کردن اجازه‌ی دسترسی به مموری را بین ماژول‌ها دارد، به \lr{FSM} زیر توجه کنید:
+	
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.4\linewidth]{source/fsm_ar.jpg}
+	\caption{\lr{Arbiter Fsm}}
+\end{figure}
+
+نحوه‌ی عملکرد این ماژول به این صورت است که یک صف بااهمیت از ماژول‌هایی که آن وصل هستند را نگه می‌دارم و در صورتی که ورودی \lr{Request} آن یک باشد به بااهمیت‌ترین ماژول متصل به خود اجازه‌ی دسترسی به حافظه را می‌دهد. سپس آن ماژول می‌تواند از مموری استفاده کند.
+	
+	\item 
+	\lr{Main Control Unit}
+	\item 
+	\lr{Control Unit}
+	\item 
+	\lr{Processor Unit}
+	\item 
+	\lr{Matrix Multiplier}
+	\item 
+	\lr{Matrix Adder}
+	\item 
+	\lr{Index To Address Transformer}
+\end{itemize}
+
+
 \subsection{ساختار درختی سیستم}
 \end{section-container}
 
