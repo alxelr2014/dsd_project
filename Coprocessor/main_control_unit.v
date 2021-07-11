@@ -49,9 +49,13 @@ wire[31:0] r_Data_In;	// r_Memory_Write = 0
 reg[31:0] r_Data_Out;	// r_Memory_Write = 1
 reg r_Memory_Write;		// 1: write, 0: read
 
-assign io_Memory_Data = (r_Memory_Write) ? r_Data_Out : 1'bZ;
+assign io_Memory_Data = (r_Memory_Write) ? r_Data_Out : 'bz;
 assign r_Data_In = io_Memory_Data;
 
+// reg [31:0] r_Config;
+// assign o_Config = r_Config;
+
+//states
 reg[2:0] r_State;
 
 localparam s_Idle = 3'b000 ;
@@ -67,6 +71,8 @@ always @(posedge i_Clock or negedge i_Reset) begin
 		r_State <= 0;
 		r_Data_Out <= 0;
 		r_Memory_Write <= 0;
+		// r_Config <= 0;
+		o_Config <= 0;
 		r_row <= 0;
 		r_column <= 0;
 		r_Processor_Counter <= 0;
@@ -77,6 +83,10 @@ always @(posedge i_Clock or negedge i_Reset) begin
 		r_Gamma <= 0;
 		r_Lambda <= 0;
 		r_mu <= 0;
+		o_Grant_Request <= 0;
+		o_Memory_Address <= 'bz;
+		o_Write_Enable <= 'bz;
+		o_Indexes_Ready <= 0;
 	end else begin
 		case(r_State)
 			s_Idle: begin
@@ -95,40 +105,34 @@ always @(posedge i_Clock or negedge i_Reset) begin
 						r_Memory_Write <= 0;
 						r_Read_Counter <= 0;	
 					end else begin
-						o_Memory_Address <= 1'bz;
+						o_Memory_Address <= 'bz;
 						// o_Write_Enable <= Z; //TODO should we?
 					end
 				end
 
 			s_Read_Config: begin
 					//address has been set in previous state
-					if (r_Read_Counter == 0) begin
-						r_State <= s_Read_Config;
-						r_Read_Counter <= 1;
-					end else begin
-						r_Read_Counter <= 0;
-						//split config
-						o_Config <= r_Data_In;
-						r_Lambda <= r_Data_In[greek_size-1:0];
-						r_Gamma <= r_Data_In[2*greek_size-1:greek_size];
-						r_mu <= r_Data_In[3*greek_size-1:2*greek_size];
-						r_Theta <= 0; //TODO
+					//split config
+					o_Config <= r_Data_In;
+					r_Lambda <= r_Data_In[greek_size-1:0];
+					r_Gamma <= r_Data_In[2*greek_size-1:greek_size];
+					r_mu <= r_Data_In[3*greek_size-1:2*greek_size];
+					r_Theta <= r_Data_In[4*greek_size-1:3*greek_size]; //TODO
 
-						//turn-off grant request
-						o_Grant_Request <= 1'b0;
-						o_Memory_Address <= 1'bz;
+					//turn-off grant request
+					o_Grant_Request <= 1'b0;
+					o_Memory_Address <= 'bz;
 
-						r_State <= s_Scatter;
-						//set registers for scattering
-						o_Indexes_Ready <= 1;
-						r_row <= 0;
-						r_column <= 0;
-					end
+					r_State <= s_Scatter;
+					//set registers for scattering
+					o_Indexes_Ready <= 1;
+					r_row <= 0;
+					r_column <= 0;
 				end
 
 			s_Scatter: begin
 					//TODO what if we don't have enough blocks?
-					if (r_Processor_Counter < p) begin
+					if (r_Processor_Counter < p - 1) begin
 						//generate rwo and column number for proccessors
 						/*
 						* increase row index till it goes beyound matrix width,
@@ -138,13 +142,16 @@ always @(posedge i_Clock or negedge i_Reset) begin
 						if (i_Indexes_Received == 1) begin
 							o_Indexes_Ready <= o_Indexes_Ready << 1;
 							r_Processor_Counter <= r_Processor_Counter + 1;
-							r_row <= r_row + 1;
-							if (r_row >= r_Gamma) begin
-								r_row <= 0;
+
+							if (r_column + 1 >= r_Gamma) begin
+								r_column <= 0;
+								r_row <= r_row + 1;
+							end else begin
 								r_column <= r_column + 1;
 							end
+						end else begin
+							r_State <= s_Scatter;
 						end
-						r_State <= s_Scatter;
 					end else begin
 						r_Processor_Counter <= 0;
 						o_Indexes_Ready <= 1;
@@ -177,7 +184,7 @@ always @(posedge i_Clock or negedge i_Reset) begin
 						r_Memory_Write <= 0;
 						r_Read_Counter <= 0;
 					end else begin
-						o_Memory_Address <= 1'bz;
+						o_Memory_Address <= 'bz;
 						// o_Write_Enable <= Z; //TODO should we?
 					end
 				end
@@ -197,7 +204,7 @@ always @(posedge i_Clock or negedge i_Reset) begin
 						end
 					end else begin					
 						o_Grant_Request <= 0;
-						o_Memory_Address <= 1'bz;
+						o_Memory_Address <= 'bz;
 						r_Read_Counter <= 0;
 						o_Write_Enable <= 0;
 						r_State <= s_Idle;
