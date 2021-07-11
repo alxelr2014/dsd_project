@@ -17,14 +17,17 @@ def memory_init():
 	print("Done")
 
 def register_init():
-	size = 10
+	size = 6
 	width = 32
-	maximum = 2 ** width - 1
+	lo, hi = int("0x00800000",16), int("0x7f7fffff",16)
 	f = open(
 		"C:/Users/emadz/Desktop/School/Books/Semester IV/Digital System Design/Project/Coprocessor/register_tb_init.txt",
 		"w")
-	for _i in range(3*(size ** 2)):
-			f.write(format(random.randint(0, maximum), 'x'))
+	for _i in range(2*(size ** 2)):
+			f.write(format(random.randint(lo, hi), 'x'))
+			f.write('\n')
+	for _i in range (size ** 2):
+			f.write(format(0,'x'))
 			f.write('\n')
 	f.close()
 	print("Done")

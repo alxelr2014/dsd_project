@@ -9,9 +9,9 @@ module multiplier_TB();
   wire a_ack, b_ack, z_stb;
 
   initial
-  $monitor ("a = %h, b = %h, z = %h valid result: %h, z_ack: %b,z_stb: %b", a, b, z,valid_z,z_ack,z_stb);
+  $monitor ("time = %d , a = %h, b = %h, z = %h valid result: %h, z_ack: %b,z_stb: %b",$realtime, a, b, z,valid_z,z_ack,z_stb);
 
-  always #10 clk=~clk;  // 25MHz
+  always #1 clk=~clk;  // 25MHz
   
   single_multiplier multiplier(
     .clk(clk),

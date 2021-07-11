@@ -1,7 +1,7 @@
 import numpy as np
 import math
 import random
-
+from  FpArithmetic import FpArithmetic
 
 class ProcessingUnit:
     def __init__(self, k):
@@ -48,6 +48,19 @@ class ProcessingUnit:
         return verify(c_matrix, d_matrix)
 
 
+def matrix_mult (matrix_a ,matrix_b):
+    rows_a , cols_a = np.shape(matrix_a)
+    rows_b , cols_b = np.shape(matrix_b)
+    matrix_res = np.zeros((rows_a,cols_b))
+    if cols_a != rows_b :
+        return
+    for __i in range(rows_a):
+        for _j in range(cols_b):
+            for _k in range(rows_b):
+                return
+                # matrix_res[__i][_j] =
+
+
 def verify(c_matrix, d_matrix):
     is_the_same = np.sum(
         np.array([np.sum(d_matrix == c_matrix, axis=0)]), axis=1)[0]
@@ -56,8 +69,8 @@ def verify(c_matrix, d_matrix):
     return is_the_same == m * n
 
 
-def submatrix(matrix_a, range):
-    return matrix_a[range[0][0]: range[0][1], range[1][0]: range[1][1]]
+def submatrix(matrix_a, ranges):
+    return matrix_a[ranges[0][0]: ranges[0][1], ranges[1][0]: ranges[1][1]]
 
 
 class CannonBotUp:
@@ -101,7 +114,10 @@ class CannonBotUp:
         return verify(self.matrix_c, matrix_d)
 
 
-lo, hi = 1, 200
+fp = FpArithmetic(executable_path="C:/Users/emadz/Desktop/School/Books/Semester IV/Digital System Design/Project/GoldenModel/chromedriver.exe")
+
+lo, hi = int("0x00800000",16), int("0x7f7fffff",16)
+print(lo," ", hi)
 p_hi, k_hi = 10, 10
 num_test = 10
 flag = True
