@@ -12,50 +12,55 @@ class FpArithmetic:
         self.__out1 = self.__driver.find_element_by_id('binOut1')
         self.__out2 = self.__driver.find_element_by_id('binOut2')
         self.__out3 = self.__driver.find_element_by_id('binOut3')
+        self.__hexOut1 = self.__driver.find_element_by_id('hexOut1')
+        self.__hexOut2 = self.__driver.find_element_by_id('hexOut2')
+        self.__hexOut3 = self.__driver.find_element_by_id('hexOut3')
         self.__plus = self.__driver.find_element_by_id('plusButton')
         self.__times = self.__driver.find_element_by_id('timesButton')
         self.button32 = self.__driver.find_element_by_id('sizeButton32')
         self.button32.send_keys(Keys.RETURN)
 
     def times_fp(self, a, b):
-        self.__input1.send_keys(Keys.BACKSPACE)
-        self.__input1.send_keys(Keys.BACKSPACE)
-        self.__input1.send_keys(Keys.BACKSPACE)
-        self.__input1.send_keys(str(a))
-        self.__input2.send_keys(Keys.BACKSPACE)
-        self.__input2.send_keys(Keys.BACKSPACE)
-        self.__input2.send_keys(Keys.BACKSPACE)
-        self.__input2.send_keys(str(b))
+        self.clear_text(self.__input1)
+        self.__input1.send_keys(hex(a))
+        self.clear_text(self.__input2)
+        self.__input2.send_keys(hex(b))
         self.__times.send_keys(Keys.ENTER)
-        return self.__out3.text[2:len(self.__out3.text)]
+        output = self.__hexOut3.text[2:len(self.__hexOut3.text)]
+        return self.hex_to_int(output)
 
     def sum_fp(self, a, b):
-        self.__input1.send_keys(Keys.BACKSPACE)
-        self.__input1.send_keys(Keys.BACKSPACE)
-        self.__input1.send_keys(Keys.BACKSPACE)
-        self.__input1.send_keys(str(a))
-        self.__input2.send_keys(Keys.BACKSPACE)
-        self.__input2.send_keys(Keys.BACKSPACE)
-        self.__input2.send_keys(Keys.BACKSPACE)
-        self.__input2.send_keys(str(b))
-        self.__plus.send_keys(Keys.ENTER)
-        return self.__out3.text[2:len(self.__out3.text)]
 
-    def bin_to_fp(self, a):
-        self.__input1.send_keys(Keys.BACKSPACE)
-        self.__input1.send_keys(Keys.BACKSPACE)
-        self.__input1.send_keys(Keys.BACKSPACE)
-        self.__input1.send_keys(str(a))
+        self.clear_text(self.__input1)
+        self.__input1.send_keys(hex(a))
+        self.clear_text(self.__input2)
+        self.__input2.send_keys(hex(b))
+        self.__plus.send_keys(Keys.ENTER)
+        output = self.__hexOut3.text[2:len(self.__hexOut3.text)]
+        return self.hex_to_int(output)
+
+    def fp_to_hex(self, a):
+        self.clear_text(self.__input1)
+        self.__input1.send_keys(hex(a))
         self.__input1.send_keys(Keys.RETURN)
-        output = self.__out1.text
-        return output
+        output = self.__hexOut1.text[2:len(self.__hexOut1.text)]
+        return self.hex_to_int(output)
+
+    def hex_to_int(self,a):
+        return int(a,16)
+
+    def clear_text(self, element):
+        length = len(element.get_attribute('value'))
+        element.send_keys(length * Keys.BACKSPACE)
+
 
     def close(self):
         self.__driver.close()
 
-"""
+'''
 fp = FpArithmetic(executable_path="C:/Users/emadz/Desktop/School/Books/Semester IV/Digital System Design/Project/GoldenModel/chromedriver.exe")
-test = fp.sum_fp(434.1, 4.67)
-print(type(test))
-fp.close()
-"""
+print(hex(1083535524))
+test = fp.sum_fp(1138298061,1083535524)
+print(test)
+fp.close()'''
+

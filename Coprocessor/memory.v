@@ -9,7 +9,7 @@ module memory #(parameter size, parameter blocks , parameter log_size , paramete
  output reg [width -1 :0] out_data );
 
 integer idx;
-reg [cell_width:0] memory [size -1 : 0];
+reg [cell_width - 1:0] memory [size -1 : 0];
 
 always @(negedge in_reset) begin
 for (idx = 0 ; idx < size ; idx = idx + 1) begin
