@@ -94,13 +94,14 @@ initial begin
 	#(2*half_cc);
       
 end
-	$monitor("@ time = %d, row_index = %h , col_index = %h , index_ready = %b , r_config = %h",$realtime, row_index, 
+	/*$monitor("@ time = %d, row_index = %h , col_index = %h , index_ready = %b , r_config = %h",$realtime, row_index, 
     col_index, index_ready , r_config);
-	/*$monitor("@ time = %d, in_data = %h , out_data = %h , write_en = %b , read_en = %b , address = %h ,state =  %b",$realtime, in_data, 
-    out_data, write_en , read_en, address , uut.control_unit.r_State);*/
+	*/
+	$monitor("@ time = %d, in_data = %h , out_data = %h , write_en = %b , read_en = %b , address = %h ,state =  %b , clock_count = %d",$realtime, in_data, 
+    out_data, write_en , read_en, address , uut.control_unit.r_State, uut.control_unit.r_Clock_Count);
 	
-	$monitor("@ time = %d, out_ready = %b , in_mem_data = %h , out_mem_data = %h, out_mem_write_en = %b , out_mem_read_en = %b , memory_address = %h , control_unit_state =  %b",$realtime,  result_ready,   memory_out_data, memory_in_data, 
-    mem_write_en, mem_read_en, memory_address , uut.control_unit.r_State);
+	/*$monitor("@ time = %d, out_ready = %b , in_mem_data = %h , out_mem_data = %h, out_mem_write_en = %b , out_mem_read_en = %b , memory_address = %h , control_unit_state =  %b",$realtime,  result_ready,   memory_out_data, memory_in_data, 
+    mem_write_en, mem_read_en, memory_address , uut.control_unit.r_State);*/
 	
 	/*$monitor("@ time = %d, reg_address = %h , reg_in_data = %h , reg_in_type = %b , reg_select_matrix = %b , reg_write_en = %b , reg_read_en = %b , reg_out_data = %h , a_cell = %h",
 $realtime, uut.reg_address, uut.reg_in_data, uut.reg_in_type , uut.reg_select_matrix , uut.reg_write_en , uut.reg_read_en , uut.reg_out_data , uut.r_file.register_file[2]);
@@ -118,22 +119,30 @@ $realtime, uut.reg_address, uut.reg_in_data, uut.reg_in_type , uut.reg_select_ma
     mu = r_config [23:16];
 	gamma = r_config[15:8];
 	lambda = r_config[7:0];
-	row_index = 0;
-	col_index = 1;
+
+	for (i = 0 ; i < lambda ; i = i + 1) begin
+	for (j = 0 ; j < gamma ; j = j + 1) begin
+	row_index = i;
+	col_index = j;
 	index_ready = 1'b1;
 	in_mu = mu;
 	while (!result_ready) begin
-	if (mem_read_en) begin
-	address <= memory_address;
-	read_en <= 1'b1;
-	write_en <= 1'b0;
-	in_data <= 0;
-	end
-	if (mem_write_en) begin
-	address <= memory_address;
-	read_en <= 1'b0;
-	write_en <= 1'b1;
-	in_data <= memory_in_data;
+		if (mem_read_en) begin
+		address <= memory_address;
+		read_en <= 1'b1;
+		write_en <= 1'b0;
+		in_data <= 0;
+		end
+		if (mem_write_en) begin
+		address <= memory_address;
+		read_en <= 1'b0;
+		write_en <= 1'b1;
+		in_data <= memory_in_data;
+		end
+		#(2*half_cc);
+		end
+	index_ready = 0;
+	#(2*half_cc);
 	end
 	#(2*half_cc);
 	end

@@ -166,13 +166,13 @@ class CannonBotUp:
         print("A:" )
         for _i in range(self.m):
             for _j in range(self.r):
-                print( hex(self.matrix_a[_i][_j]), end = " " )
+                print( hex(int(self.matrix_a[_i][_j])), end = " " )
             print()
 
         print("B:" )
         for _i in range(self.r):
             for _j in range(self.n):
-                print(hex(self.matrix_b[_i][_j]), end =" ")
+                print(hex(int(self.matrix_b[_i][_j])), end =" ")
             print()
 
         print("C:" )

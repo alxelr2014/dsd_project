@@ -5,8 +5,8 @@ from  CannonAlgoBU import CannonBotUp,ProcessingUnit
 from FpArithmetic import FpArithmetic
 def memory_init():
 	a_row = 5
-	b_row = 7
-	b_col = 12
+	b_row = 5
+	b_col = 5
 	num_processor = 1
 	sub_matrix = 3
 	con_lambda = math.ceil(a_row / sub_matrix)
@@ -16,41 +16,11 @@ def memory_init():
 
 	fp = FpArithmetic(
 		executable_path="C:/Users/emadz/Desktop/School/Books/Semester IV/Digital System Design/Project/GoldenModel/chromedriver.exe")
-	lo, hi = int("0x10000000", 16), int("0x707fffff", 16)
+	lo, hi = int("0x38D1B717", 16), int("0x42C80000", 16)
 	cannon = CannonBotUp(a_row, b_row, b_col,num_processor, sub_matrix ,lo ,hi, fp)
 	config = format(con_theta, '02x') +  format(con_mu , '02x') +  format(con_gamma , '02x') +  format(con_lambda , '02x')
 	status = "80000000"
-	f = open(
-		"C:/Users/emadz/Desktop/School/Books/Semester IV/Digital System Design/Project/Coprocessor/memory_tb_init.txt",
-		"w")
-	f.write(config + '\n')
-	f.write(status + '\n')
-
-	# print(cannon.partition(0))
-	for _list in cannon.partition(0):
-		for _sublist in _list:
-			for _element in _sublist:
-				f.write(format(int(_element), '08x') + '\n')
-				print(format(int(_element), '08x'))
-	for _list in cannon.partition(1):
-		for _sublist in _list:
-			for _element in _sublist:
-				f.write(format(int(_element), '08x') + '\n')
-				print(format(int(_element), '08x'))
-	f.close()
-	f = open(
-		"C:/Users/emadz/Desktop/School/Books/Semester IV/Digital System Design/Project/Coprocessor/processor_tb_check.txt",
-		"w")
-	cannon.main_algo()
-	print(cannon.matrix_c)
-	for _list in cannon.partition(2):
-		for _sublist in _list:
-			for _element in _sublist:
-				f.write(format(int(_element), '08x') + '\n')
-				print(format(int(_element), '08x'))
-	f.close()
-
-	fp.close()
+	cannon.test()
 	print("Done")
 
 def register_init():
@@ -119,3 +89,65 @@ if int_input == 0:
 	block_add()
 if int_input == 1:
 	block_mult()
+if int_input == 2:
+	memory_init()
+
+	''' f = open(
+	   "C:/Users/emadz/Desktop/School/Books/Semester IV/Digital System Design/Project/Coprocessor/memory_tb_init.txt",
+	   "w")
+   f.write(config + '\n')
+   f.write(status + '\n')
+
+   # print(cannon.partition(0))
+   for _list in cannon.partition(0):
+	   for _sublist in _list:
+		   for _element in _sublist:
+			   f.write(format(int(_element), '08x') + '\n')
+			   # print(format(int(_element), '08x'))
+   for _list in cannon.partition(1):
+	   for _sublist in _list:
+		   for _element in _sublist:
+			   f.write(format(int(_element), '08x') + '\n')
+			   # print(format(int(_element), '08x'))
+   f.close()
+   f = open(
+	   "C:/Users/emadz/Desktop/School/Books/Semester IV/Digital System Design/Project/Coprocessor/processor_tb_check.txt",
+	   "w")
+   cannon.main_algo()
+   for _list in cannon.partition(2):
+	   for _sublist in _list:
+		   for _element in _sublist:
+			   f.write(format(int(_element), '08x') + '\n')
+			   # print(format(int(_element), '08x'))
+   f.close()
+
+   f = open(
+	   "C:/Users/emadz/Desktop/School/Books/Semester IV/Digital System Design/Project/Coprocessor/mem_visual.txt",
+	   "w")
+
+   for _list in cannon.partition(0):
+	   for _sublist in _list:
+		   for _element in _sublist:
+			   f.write(format(int(_element), '08x') + ' ')
+			   # print(format(int(_element), '08x'))
+		   f.write('\n')
+	   f.write('\n\n')
+   f.write('\n\n')
+   for _list in cannon.partition(1):
+	   for _sublist in _list:
+		   for _element in _sublist:
+			   f.write(format(int(_element), '08x') + ' ')
+			   # print(format(int(_element), '08x'))
+		   f.write('\n')
+	   f.write('\n\n')
+   f.write('\n\n')
+   for _list in cannon.partition(2):
+	   for _sublist in _list:
+		   for _element in _sublist:
+			   f.write(format(int(_element), '08x') + ' ')
+			   # print(format(int(_element), '08x'))
+		   f.write('\n')
+	   f.write('\n\n')
+   f.write('\n\n')
+   f.close()
+   fp.close() '''

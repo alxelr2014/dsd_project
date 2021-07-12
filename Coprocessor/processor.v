@@ -50,10 +50,11 @@ reg [width - 1: 0 ] reg_in_data;
 reg [1:0] reg_in_type;
 reg [1:0] reg_select_matrix;
 reg reg_read_en, reg_write_en;
+reg register_reset;
 wire [width - 1: 0] reg_out_data;
 
 register_file #(.size(size), .address_width(register_address_width), .cell_width(cell_width)) r_file (.in_address(reg_address) , .in_data(reg_in_data), .in_type(reg_in_type), .in_select_matrix(reg_select_matrix),
-.in_clk (in_clk), .in_reset (in_reset), .in_read_en (reg_read_en), .in_write_en(reg_write_en) ,.out_data (reg_out_data));
+.in_clk (in_clk), .in_reset (register_reset), .in_read_en (reg_read_en), .in_write_en(reg_write_en) ,.out_data (reg_out_data));
 
 
 wire [register_address_width - 1: 0] n_cu_reg_address;
@@ -107,10 +108,19 @@ assign n_cu_type = 2'b01; //row
 
 localparam s_CU_CONTROL = 1'b0, s_PU_CONTROL = 1'b1;
 reg r_states;
+reg reseted;
 
-always @(negedge in_reset)
+always @(negedge in_reset) begin
+	register_reset <= 1;
 	r_states = s_CU_CONTROL;
+	reseted <= 1;
+end
 always @(posedge in_clk) begin
+	register_reset <= 1;
+	if (reseted) begin
+		register_reset <= 0;
+		reseted <= 0; 
+	end
 	case (r_states)
 	s_CU_CONTROL: begin
 	reg_address <= n_cu_reg_address;
@@ -123,6 +133,8 @@ always @(posedge in_clk) begin
 	n_sqm_in_data_ready <= 1'b0;
 	if (n_sqm_in_ready)
 		r_states <= s_PU_CONTROL;
+	if (out_result_ready)
+		register_reset <= 0;
 		end
 	s_PU_CONTROL: begin
 	reg_address <= n_sqm_address;
