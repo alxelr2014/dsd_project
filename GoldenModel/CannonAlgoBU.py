@@ -64,6 +64,18 @@ class ProcessingUnit:
                     matrix_res[_i][_j] = fp_sum_res
         return matrix_res
 
+    def matrix_add(self, matrix_a, matrix_b):
+        rows_a , cols_a = np.shape(matrix_a)
+        rows_b , cols_b = np.shape(matrix_b)
+        matrix_res = np.zeros((rows_a,cols_a))
+        if cols_a != cols_b or rows_a != rows_b:
+            return
+        for _i in range(rows_a):
+            for _j in range(cols_a):
+                fp_sum_res =  self.fp.sum_fp(int(matrix_b[_i][_j]),  int(matrix_a[_i][_j]))
+                matrix_res[_i][_j] = fp_sum_res
+        return matrix_res
+
 
 def verify(c_matrix, d_matrix):
     is_the_same = np.sum(
@@ -177,7 +189,7 @@ class CannonBotUp:
 
         return verify(self.matrix_c, matrix_d)
 
-
+"""
 fp1 = FpArithmetic(executable_path="C:/Users/emadz/Desktop/School/Books/Semester IV/Digital System Design/Project/GoldenModel/chromedriver.exe")
 lo, hi = 1,6
 fp_lo, fp_hi = int("0x38D1B717", 16), int("0x43FA0000", 16)
@@ -197,4 +209,4 @@ for i in range(num_test):
 
 print(flag)
 fp1.close()
-# ProcessingUnit(5).test()
+# ProcessingUnit(5).test()"""

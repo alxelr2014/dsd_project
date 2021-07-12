@@ -96,8 +96,18 @@ initial begin
 end
 	$monitor("@ time = %d, row_index = %h , col_index = %h , index_ready = %b , r_config = %h",$realtime, row_index, 
     col_index, index_ready , r_config);
-	$monitor("@ time = %d, memory_in_data = %h , memory_out_data = %h , mem_write_en = %b , mem_read_en = %b , memory_address = %h",$realtime, memory_in_data, 
-    memory_out_data, mem_write_en , mem_read_en, memory_address);
+	/*$monitor("@ time = %d, in_data = %h , out_data = %h , write_en = %b , read_en = %b , address = %h ,state =  %b",$realtime, in_data, 
+    out_data, write_en , read_en, address , uut.control_unit.r_State);*/
+	
+	$monitor("@ time = %d, out_ready = %b , in_mem_data = %h , out_mem_data = %h, out_mem_write_en = %b , out_mem_read_en = %b , memory_address = %h , control_unit_state =  %b",$realtime,  result_ready,   memory_out_data, memory_in_data, 
+    mem_write_en, mem_read_en, memory_address , uut.control_unit.r_State);
+	
+	/*$monitor("@ time = %d, reg_address = %h , reg_in_data = %h , reg_in_type = %b , reg_select_matrix = %b , reg_write_en = %b , reg_read_en = %b , reg_out_data = %h , a_cell = %h",
+$realtime, uut.reg_address, uut.reg_in_data, uut.reg_in_type , uut.reg_select_matrix , uut.reg_write_en , uut.reg_read_en , uut.reg_out_data , uut.r_file.register_file[2]);
+*/
+ /*$monitor("@ time = %d, ready = %b , in_data = %h , in_data_ready = %b , out_cell_c = %h , reg_address = %h , reg_type = %b , reg_matrix = %b , reg_read_en = %b , reg_write_en = %b , out_ready = %b ",$realtime, 
+			uut.n_sqm_in_ready, uut.n_sqm_in_data, uut.n_sqm_in_data_ready , uut.n_sqm_out_data , uut.n_sqm_address , uut.n_sqm_type, uut.n_sqm_matrix ,  uut.n_sqm_read_en , uut.n_sqm_write_en , uut.n_sqm_out_ready);*/
+
    init_done = 1'b1;
     address <= 0;
     read_en <= 1'b1;

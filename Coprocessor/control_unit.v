@@ -35,7 +35,7 @@ module CU #(parameter k = 2, parameter index_width = 8, parameter memory_size = 
 reg[index_width-1:0] r_Row_Index; // save i
 reg[index_width-1:0] r_Column_Index; // save j 
 reg[max_mu_log-1:0] r_x; // x for A_ix and B_xi 
-reg[log_k_2-1:0] r_Clock_Count;
+reg[k-1:0] r_Clock_Count;
 reg[3:0] r_State;
 
 wire[index_width-1:0] w_Row_Index_To_Decode;
@@ -46,7 +46,7 @@ assign w_Select_Hot_bit = (o_RF_Read_Enable)? 3'b100 : (o_AorB)? 3'b010 : 3'b001
 assign w_Row_Index_To_Decode = (o_RF_Read_Enable)? r_Row_Index : (o_AorB)? r_x : r_Row_Index;
 assign w_Column_Index_To_Decode = (o_RF_Read_Enable)? r_Column_Index : (o_AorB)? r_Column_Index : r_x;
 
-assign o_RF_Address = r_Clock_Count;
+assign o_RF_Address = (r_Clock_Count - 1) * k;
 
 index_to_address #(.index_width(index_width) , .k(k) , .Log_Memory_Size(memory_size_log), .output_start(2*(memory_size-2)/3)) 
 index_to_address_transform(
@@ -54,6 +54,7 @@ index_to_address_transform(
     .i_Row_Index(w_Row_Index_To_Decode),
     .i_Column_Index(w_Column_Index_To_Decode),
     .i_Type(w_Select_Hot_bit),
+    .position(r_Clock_Count),
     .o_Address(o_Memory_Address)
 );
 
@@ -102,16 +103,18 @@ always @(posedge i_Clock, negedge i_Reset) begin
                 r_State <= s_Receive;
                 o_Memory_Read_Enable <= 1;
                 r_Clock_Count <= 0;
-                o_RF_Write_Enable <= 1;
+                o_RF_Write_Enable <= 0;
             end
         end
         s_Receive: begin
-            if(r_Clock_Count < (k^2 - 1)) begin
+            if(r_Clock_Count < k ) begin
+                o_RF_Write_Enable <= 1;
                 r_Clock_Count <= r_Clock_Count + 1;
             end else begin
                 if (o_AorB == 0) begin
                     o_AorB <= 1;
                     r_Clock_Count <= 0;
+                    o_RF_Write_Enable <= 0;
                 end else begin
                     r_Clock_Count <= 0;
                     o_Grant_Request <= 0;

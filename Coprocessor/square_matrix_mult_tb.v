@@ -36,7 +36,7 @@ square_matrix_mult #( .size(size) , .cell_width(cell_width) , .address_width(add
 	.out_type (proc_type),
 	.out_matrix (proc_matrix),
 	.out_read_en (proc_read_en),
-	.out_wirte_en (proc_write_en),
+	.out_write_en (proc_write_en),
         .out_cell_c (proc_out_bus),
         .out_ready (out_ready));
 
@@ -59,14 +59,16 @@ initial begin
 	reset = 1'b1;
 	#(half_cc) reset = 1'b0;
 	#(half_cc) reset = 1'b1; 
-	//$monitor("@ time = %d, address = %d , type = %d , select_matrix = %d , in_data = %h , read_en = %b , write_en = %b , out_data = %h",$realtime, reg_address, reg_in_type, reg_select_matrix,
-		//	 reg_in_data, reg_read_en ,reg_write_en, reg_out_data);
-	//$monitor("@ time = %d, in_ready = %b , proc_in_bus = %h , proc_ready = %b , proc_address = %d , proc_type = %h , proc_matrix = %b , proc_read_en = %b , proc_write_en = %b , proc_out_bus = %h , out_ready = %b , state = %b , cell_c  = %h",
-// $realtime, in_ready , proc_in_bus, proc_ready, proc_address,proc_type,proc_matrix,proc_read_en,proc_write_en, proc_out_bus, out_ready , uut.r_states , uut.out_cell_c);
+	$monitor("@ time = %d, address = %d , type = %d , select_matrix = %d , in_data = %h , read_en = %b , write_en = %b , out_data = %h",$realtime, reg_address, reg_in_type, 
+			reg_select_matrix,reg_in_data, reg_read_en ,reg_write_en, reg_out_data);
+			
+	
+//$monitor("@ time = %d, in_ready = %b , proc_in_bus = %h , proc_ready = %b , proc_address = %d , proc_type = %h , proc_matrix = %b , proc_read_en = %b , proc_write_en = %b , proc_out_bus = %h , out_ready = %b , state = %b , cell_c  = %h",
+ //$realtime, in_ready , proc_in_bus, proc_ready, proc_address,proc_type,proc_matrix,proc_read_en,proc_write_en, proc_out_bus, out_ready , uut.r_states , uut.out_cell_c);
 
 
-	$monitor("@ time = %d,  r_proc_in_a = %h , r_mult_in_a= %h , in_row_a = %h ,  r_proc_in_b = %h , r_mult_in_b= %h , in_col_b = %h , in_ready = %b , reuslt = %h",
- $realtime,   uut.r_proc_in_a  ,uut.col_proc.r_mult_in_a , uut.col_proc.in_row_a , uut.r_proc_in_b  ,uut.col_proc.r_mult_in_b , uut.col_proc.in_col_b, uut.r_proc_in_ready , uut.n_proc_out_z);
+	//$monitor("@ time = %d,  r_proc_in_a = %h , r_mult_in_a= %h , in_row_a = %h ,  r_proc_in_b = %h , r_mult_in_b= %h , in_col_b = %h , in_ready = %b , reuslt = %h",
+ //$realtime,   uut.r_proc_in_a  ,uut.col_proc.r_mult_in_a , uut.col_proc.in_row_a , uut.r_proc_in_b  ,uut.col_proc.r_mult_in_b , uut.col_proc.in_col_b, uut.r_proc_in_ready , uut.n_proc_out_z);
 
 	file = $fopen("C:/Users/emadz/Desktop/School/Books/Semester IV/Digital System Design/Project/Coprocessor/register_tb_init.txt", "r");
 	for (k = 0 ; k < 3 ; k = k + 1) begin
@@ -87,7 +89,7 @@ initial begin
 	$fclose(file);
 	in_ready = 1; 
 
-	while (!out_ready) begin	
+	while (1'b1) begin	
 	proc_ready <= 1'b0;
 	if (proc_read_en) begin
 		reg_address <= proc_address;
@@ -118,8 +120,8 @@ initial begin
 		proc_ready <= 1'b0;
 		end
 	end
-
 	
+	out_ack <= 1;
 	#(2*half_cc);
 	end
 end

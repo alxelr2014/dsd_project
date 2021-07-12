@@ -1,6 +1,7 @@
 import random
 import math
-from  CannonAlgoBU import CannonBotUp
+import numpy as np
+from  CannonAlgoBU import CannonBotUp,ProcessingUnit
 from FpArithmetic import FpArithmetic
 def memory_init():
 	a_row = 5
@@ -69,4 +70,52 @@ def register_init():
 	print("Done")
 
 
-memory_init()
+def block_mult():
+	size = 3
+	matrix_a = np.zeros((size,size))
+	matrix_b = np.zeros((size,size))
+	for _i in range(size):
+		raw_input = input().split(" ")
+		matrix_a[_i][:] = [int(_s, 16) for _s in raw_input]
+
+	for _i in range(size):
+		raw_input = input().split(" ")
+		matrix_b[_i][:] = [int(_s, 16) for _s in raw_input]
+
+	fp = FpArithmetic(
+		executable_path="C:/Users/emadz/Desktop/School/Books/Semester IV/Digital System Design/Project/GoldenModel/chromedriver.exe")
+	processor = ProcessingUnit(size,fp)
+	matrix_c = processor.matrix_mult(matrix_a,matrix_b)
+
+	for _i in range(size):
+		for _j in range(size):
+			print(format(int(matrix_c[_i][_j]),'08x') , end= " ")
+		print()
+
+
+def block_add():
+	size = 3
+	matrix_a = np.zeros((size, size))
+	matrix_b = np.zeros((size, size))
+	for _i in range(size):
+		raw_input = input().split(" ")
+		matrix_a[_i][:] = [int(_s, 16) for _s in raw_input]
+
+	for _i in range(size):
+		raw_input = input().split(" ")
+		matrix_b[_i][:] = [int(_s, 16) for _s in raw_input]
+
+	fp = FpArithmetic(
+		executable_path="C:/Users/emadz/Desktop/School/Books/Semester IV/Digital System Design/Project/GoldenModel/chromedriver.exe")
+	processor = ProcessingUnit(size, fp)
+	matrix_c = processor.matrix_add(matrix_a, matrix_b)
+
+	for _i in range(size):
+		for _j in range(size):
+			print(format(int(matrix_c[_i][_j]),'08x') , end= " ")
+		print()
+int_input = int(input())
+if int_input == 0:
+	block_add()
+if int_input == 1:
+	block_mult()

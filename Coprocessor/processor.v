@@ -24,7 +24,8 @@ wire [width - 1: 0 ] n_sqm_out_data;
 wire [register_address_width - 1: 0] n_sqm_address;
 wire [1:0] n_sqm_type;
 wire [1:0] n_sqm_matrix;
-wire n_sqm_read_en , n_sqm_write_en , n_sqm_in_data_ready;
+wire n_sqm_read_en , n_sqm_write_en;
+reg n_sqm_in_data_ready;
 
 
 
@@ -39,7 +40,7 @@ square_matrix_mult #(.size(size) , .cell_width(cell_width) , .address_width (reg
 	.out_type (n_sqm_type),
 	.out_matrix (n_sqm_matrix),
 	.out_read_en (n_sqm_read_en),
-	.out_wirte_en (n_sqm_write_en),
+	.out_write_en (n_sqm_write_en),
         .out_cell_c (n_sqm_out_data),
         .out_ready (n_sqm_out_ready) );
 
@@ -52,7 +53,7 @@ reg reg_read_en, reg_write_en;
 wire [width - 1: 0] reg_out_data;
 
 register_file #(.size(size), .address_width(register_address_width), .cell_width(cell_width)) r_file (.in_address(reg_address) , .in_data(reg_in_data), .in_type(reg_in_type), .in_select_matrix(reg_select_matrix),
-.in_clk (clk), .in_reset (reset), .in_read_en (reg_read_en), .in_write_en(reg_write_en) ,.out_data (reg_out_data));
+.in_clk (in_clk), .in_reset (in_reset), .in_read_en (reg_read_en), .in_write_en(reg_write_en) ,.out_data (reg_out_data));
 
 
 wire [register_address_width - 1: 0] n_cu_reg_address;
@@ -61,7 +62,7 @@ wire [1:0] n_cu_matrix;
 wire cu_mem_write , cu_mem_read;
 wire [memory_size_log - 1: 0 ] cu_mem_address;
 wire n_cu_type;
-assign n_cu_matrix = (n_cu_write_en) ? 2'b10 : {1'b0, n_cu_AorB} ;
+assign n_cu_matrix = (n_cu_read_en) ? 2'b10 : {1'b0, n_cu_AorB} ;
 
 CU #(.k (size), .index_width(index_width), .memory_size(memory_size), .memory_size_log(memory_size_log) , .max_mu_log(index_width), .log_k_2(register_address_width)) control_unit (
     .i_Clock (in_clk),
@@ -72,8 +73,8 @@ CU #(.k (size), .index_width(index_width), .memory_size(memory_size), .memory_si
 
     // RF input output
     .o_RF_Address (n_cu_reg_address), // Write Address for A or B or Read Address for C
-    .o_RF_Write_Enable (n_cu_read_en),// A or B write in RF, enable at receive state disable after that
-    .o_RF_Read_Enable (n_cu_write_en), // read C, enable at write state disable after that, in write state determine address
+    .o_RF_Write_Enable (n_cu_write_en),// A or B write in RF, enable at receive state disable after that
+    .o_RF_Read_Enable (n_cu_read_en), // read C, enable at write state disable after that, in write state determine address
     .o_AorB (n_cu_AorB), // send to RF; read A or B, in receive state determine address
 
     //Main Cu input output
@@ -119,6 +120,7 @@ always @(posedge in_clk) begin
 	reg_read_en <= n_cu_read_en;
 	reg_write_en <= n_cu_write_en;
 	r_states <= s_CU_CONTROL;
+	n_sqm_in_data_ready <= 1'b0;
 	if (n_sqm_in_ready)
 		r_states <= s_PU_CONTROL;
 		end
@@ -128,10 +130,13 @@ always @(posedge in_clk) begin
 	reg_in_type <= n_sqm_type;
 	reg_select_matrix <= n_sqm_matrix;
 	reg_read_en <= n_sqm_read_en;
-	reg_write_en <= n_cu_write_en;
+	reg_write_en <= n_sqm_write_en;
 	r_states <= s_PU_CONTROL;
+	n_sqm_in_data_ready <= 1'b0;
 	if (n_sqm_out_ready)
 		r_states <= s_CU_CONTROL;
+	if (reg_read_en && n_sqm_read_en && !n_sqm_in_data_ready)
+		n_sqm_in_data_ready <= 1'b1;
 		end
 	endcase
 end
