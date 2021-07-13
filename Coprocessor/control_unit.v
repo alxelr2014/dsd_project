@@ -87,7 +87,7 @@ always @(posedge i_Clock, negedge i_Reset) begin
     end
     case (r_State)
         s_Idle: begin
-            o_Result_Ready <= 0;
+            // o_Result_Ready <= 0;
             if(i_Indexes_Ready) begin
                 r_Row_Index <= i_Row_Index;
                 r_Column_Index <= i_Column_Index;

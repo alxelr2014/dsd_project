@@ -38,11 +38,11 @@ always @(posedge in_clk) begin
 			out_data[(idx)*cell_width +: cell_width] <= register_file[in_address + (in_select_matrix * size_square) + idx * size];
 		end
 	default: 
-		out_data <= 32'bz;
+		out_data <= 'bz;
 	endcase
 	end
 	else
-		out_data <= 32'bz;
+		out_data <= 'bz;
 	if(in_write_en && correct_type) begin
 	case (in_type)
 	2'b00: begin // cell 
@@ -57,7 +57,7 @@ always @(posedge in_clk) begin
 			register_file[in_address + (in_select_matrix * size_square) + idx * size] <= in_data[(idx)*cell_width +: cell_width] ;
 		end
 	default: 
-		out_data <= 32'bz;
+		out_data <= 'bz;
 	endcase
 	end
 end
