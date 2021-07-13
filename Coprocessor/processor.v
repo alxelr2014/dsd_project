@@ -1,5 +1,5 @@
 
-module processor #(parameter size = 4 , parameter cell_width = 32, parameter register_address_width = $clog2(size^2) , parameter index_width = 8 ,parameter memory_size = 1024 ,parameter memory_size_log = 10 , parameter width = cell_width * size  ) 
+module processor #(parameter size = 4 , parameter cell_width = 32, parameter register_address_width = $clog2(size*size) , parameter index_width = 8 ,parameter memory_size = 1024 ,parameter memory_size_log = 10 , parameter width = cell_width * size  ) 
 ( input in_clk,
  input in_reset,
  input in_grant,
@@ -98,10 +98,10 @@ CU #(.k (size), .index_width(index_width), .memory_size(memory_size), .memory_si
     .o_Memory_Address (cu_mem_address) // Write Address or Read Address in Memory
 );
 
-assign out_mem_data = (in_grant) ? reg_out_data : 32'bz;
+assign out_mem_data = (in_grant) ? reg_out_data : 'bz;
 assign out_mem_write_en = (in_grant) ? cu_mem_write : 1'bz;
 assign out_mem_read_en = (in_grant) ? cu_mem_read : 1'bz;
-assign out_mem_address = (in_grant) ? cu_mem_address : 32'bz;
+assign out_mem_address = (in_grant) ? cu_mem_address : 'bz;
 
 assign n_sqm_in_data = reg_out_data;
 assign n_cu_type = 2'b01; //row

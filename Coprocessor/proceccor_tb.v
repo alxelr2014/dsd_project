@@ -78,7 +78,7 @@ initial begin
     init_done = 1'b0;
 	$monitor("@ time = %d, address = %h , in_data = %h , read_en = %b , write_en = %b , out_data = %h",$realtime, address, 
     in_data, read_en , write_en, out_data);
-	file = $fopen("C:/Users/emadz/Desktop/School/Books/Semester IV/Digital System Design/Project/Coprocessor/memory_tb_init.txt", "r");
+	file = $fopen("C:/Users/LEGION/Desktop/DSD_Project/dsd_project/Coprocessor/init/memory_tb_init.txt", "r");
   	for(i = 0; i < memory_size / size ; i = i + 1) begin
 	for (j = 0 ; j < size; j = j + 1) begin
   	$fscanf(file, "%x\n", my_reg);
@@ -150,7 +150,7 @@ $realtime, uut.reg_address, uut.reg_in_data, uut.reg_in_type , uut.reg_select_ma
 	end
 	#(2*half_cc);
 	end
-	$writememh("processor_tb_result.txt", memory.memory);
+	$writememh("C:/Users/LEGION/Desktop/DSD_Project/dsd_project/Coprocessor/init/processor_tb_result.txt", memory.memory);
 	$finish;
 end
 endmodule

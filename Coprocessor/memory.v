@@ -31,7 +31,7 @@ always @(posedge in_clk) begin
 			out_data[(idx * cell_width)  +: cell_width] <= memory [idx + in_address];
 	end
 	else 
-		out_data <= 32'bz;
+		out_data <= 'bz;
 
 	if (in_write_en) begin //creates latch
 		for (idx = 0 ; idx < blocks ; idx = idx + 1)
