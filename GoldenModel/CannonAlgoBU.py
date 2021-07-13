@@ -59,7 +59,7 @@ class ProcessingUnit:
             for _j in range(cols_b):
                 for _k in range(rows_b):
                     fp_prod_res = self.fp.times_fp(int(matrix_a[_i][_k]) , int(matrix_b[_k][_j]))
-                    fp_sum_res = self.fp.sum_fp(int(matrix_res[_i][_j]),  fp_prod_res)
+                    fp_sum_res = self.fp.sum_fp(int(matrix_res[_i][_j]),  int(fp_prod_res))
                     # print(_i , " " , _j , " " , _k, " : " , fp_prod_res , " " , fp_sum_res)
                     matrix_res[_i][_j] = fp_sum_res
         return matrix_res
@@ -156,7 +156,7 @@ class CannonBotUp:
             return result
 
     def test(self):
-        self.main_algo()
+        # self.main_algo()
         matrix_d = self.processors[0].matrix_mult(self.matrix_a, self.matrix_b)
         print("m = ", self.m, " r = ", self.r, " n = ",
               self.n, " p = ", self.p, " k = ", self.k)

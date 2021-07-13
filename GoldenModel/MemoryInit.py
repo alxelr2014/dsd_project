@@ -9,9 +9,9 @@ ABSOLUTE_PATH = "C:/Users/emadz/Desktop/School/Books/Semester IV/Digital System 
 RELATIVE_PATH = "test/" # "GoldenModel/" #
 def memory_init():
     a_row = 5
-    b_row = 5
-    b_col = 5
-    num_processor = 1
+    b_row = 4
+    b_col = 7
+    num_processor = 4
     sub_matrix = 3
     con_lambda = math.ceil(a_row / sub_matrix)
     con_gamma = math.ceil(b_col / sub_matrix)
@@ -25,6 +25,7 @@ def memory_init():
                          num_processor, sub_matrix, lo, hi, fp)
     config = format(con_theta, '02x') + format(con_mu, '02x') + \
         format(con_gamma, '02x') + format(con_lambda, '02x')
+    print(config)
     status = "80000000"
     print(cannon.test())
 
@@ -49,7 +50,7 @@ def memory_init():
     f = open(
         ABSOLUTE_PATH + RELATIVE_PATH + "processor_tb_check.txt",
         "w")
-    cannon.main_algo()
+    ## cannon.main_algo()
     for _list in cannon.partition(2):
         for _sublist in _list:
             for _element in _sublist:
