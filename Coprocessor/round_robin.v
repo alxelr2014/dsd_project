@@ -1,5 +1,5 @@
 
-module round_robin #(parameter width) (input in_clk,input in_reset,input [width - 1:0] in_request, output reg [width - 1:0] out_grant);
+module round_robin #(parameter width=4) (input in_clk,input in_reset,input [width - 1:0] in_request, output reg [width - 1:0] out_grant);
 
 localparam s_IDLE = 2'b00 , s_GRANT = 2'b01 , s_WORK = 2'b10;
 reg [1:0] r_state;
@@ -69,7 +69,7 @@ parameter width = 32'd5;
 parameter time_quantum = 32'd2;
 reg [width - 1 : 0] request;
 wire [width - 1 : 0] grant;
-round_robin #(.width(width) , .time_quantum(time_quantum)) uut (.in_clk (clk),.in_reset(reset) , .in_request(request), .out_grant(grant));
+round_robin #(.width(width)) uut (.in_clk (clk),.in_reset(reset) , .in_request(request), .out_grant(grant));
 initial begin
 	clk = 1'b0;
 	forever #(half_cc) clk = ~clk;

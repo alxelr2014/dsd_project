@@ -1,5 +1,4 @@
 `timescale 1ns/1ns
-
 module main_CU #(
 	parameter p = 4,				//number of processors
 	parameter index_width = 8,		//width of i, j, lambda, gamma, mu

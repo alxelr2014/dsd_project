@@ -101,6 +101,7 @@ always @(posedge i_Clock, negedge i_Reset) begin
             end
         end 
         s_Request_Read_Grant: begin
+            o_Indexes_Received <= 0;
             if(i_Grant) begin
                 r_State <= s_Receive;
                 o_Memory_Read_Enable <= 1;

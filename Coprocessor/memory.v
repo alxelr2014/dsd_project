@@ -1,5 +1,5 @@
 
-module memory #(parameter size, parameter blocks , parameter log_size , parameter cell_width = 32 , parameter width = blocks * cell_width)
+module memory #(parameter size = 1024, parameter blocks = 4 , parameter log_size = 10, parameter cell_width = 32 , parameter width = blocks * cell_width)
 (input [log_size - 1: 0] in_address ,
  input [width - 1: 0] in_data,
  input [cell_width - 1 : 0] in_status,
@@ -8,7 +8,7 @@ module memory #(parameter size, parameter blocks , parameter log_size , paramete
  input in_write_en, 
  input in_clk,
  input in_reset,
- output reg [width -1 :0] out_data ),
+ output reg [width -1 :0] out_data,
  output [cell_width - 1 :0] out_status,
  output [cell_width - 1 :0] out_config
  );
