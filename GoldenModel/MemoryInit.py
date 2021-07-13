@@ -29,7 +29,7 @@ def memory_init():
     cannon.main_algo()
 
     f = open(
-        ABSOLUTE_PATH + RELATIVE_PATH + " memory_tb_init.txt",
+        ABSOLUTE_PATH + RELATIVE_PATH + "memory_tb_init.txt",
         "w")
     f.write(config + '\n')
     f.write(status + '\n')
@@ -93,8 +93,8 @@ def memory_init():
 def memory_check():
     memory_size = 256
     init_address = (2*(memory_size + 2)) //3 + 3
-    rows = 5
-    cols = 5
+    rows = 7
+    cols = 1
     size = 3
     num_blocks = math.ceil(rows / size) * math.ceil(cols / size)
     stop_line = num_blocks * size * size + 1
@@ -104,7 +104,7 @@ def memory_check():
         print(line_result.strip() , " " , line_check.strip())
         if line_result != line_check:
             print("DIFFERENT")
-            return
+
     print("SAME")
 
 def register_init():
