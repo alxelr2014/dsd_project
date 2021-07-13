@@ -1,38 +1,110 @@
-\documentclass[]{article}
+\documentclass[12pt,onecolumn,a4paper,fleqn]{article}
+\usepackage{epsfig,graphicx,subfigure,amsthm,amsmath}
 \usepackage[table,xcdraw,svgnames]{xcolor}
-\usepackage{commons/course}
 \usepackage{mathtools}
+\usepackage{fancyhdr}
+\usepackage{sidecap}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usetikzlibrary{decorations.pathreplacing}
+\usepackage{relsize}
+\usepackage{color,xcolor}
+\usepackage[framed,numbered]{matlab-prettifier}
+\usepackage{files/persianheader}     
+\usepackage{float}
+\usepackage{enumerate}
+\usepackage{booktabs}
+\usepackage{xepersian}
+
+
+\settextfont[Path=fonts/,BoldFont={ZarBd.ttf},BoldFeatures={Scale=0.9}]{BZar.ttf}
+
 \DeclarePairedDelimiter\ceil{\lceil}{\rceil}
 \DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
 
+
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{\textbf{طراحی سیستم‌های دیجیتال}}
+\chead{\textbf{گزارش پروژه}}
+\lhead{\textbf{\nouppercase{\rightmark}}}
+\cfoot{({\thepage})}
+\renewcommand{\headrulewidth}{1pt}
+\renewcommand{\footrulewidth}{1pt}
+\renewcommand{\sectionmark}[1]{\markright{#1}}
+\renewcommand{\subsectionmark}[1]{\markright{#1}}
+
+
 \begin{document}
-	
-\begin{titlepage}
-\begin{center}
-\heading
-\end{center}
-\end{titlepage}
 %%% title pages
+\large
+\begin{titlepage}
+	
+	\begin{center}
+		\begin{Large}
+			\textbf{
+				به نام خدا\\
+			}
+		\end{Large}
+		
+		\vspace{2cm}
+		\includegraphics[scale=0.6]{files/sharif-logo.png}\\
+		\vspace{0.5cm}
+		\begin{Large}
+			\textbf{
+				دانشگاه صنعتی شریف\\
+				\vspace{0.5cm}
+				دانشکده مهندسی کامپیوتر\\
+			}
+		\end{Large}
+		\vspace{2.5cm}
+		\begin{huge}
+			\textbf{
+				طراحی سیستم‌های دیجیتال\\
+				\vspace{0.5cm}
+			}
+		\end{huge}
+		
+		\begin{Large}
+			\textbf{
+				پروژه‌ی پایانی درس:\\ ضرب‌کننده‌ی ماتریسی با استاندارد \lr{IEEE 754} \\
+			}
+		\end{Large}
+		
+		\noindent\rule[1ex]{\linewidth}{1pt}
+		\vspace{1.5cm}
+		\begin{Large}{
+				استاد:
+				\textbf{
+					دکتر فرشاد بهاروند \\
+				}
+				عماد زین‌اوقلی، مازیار شمسی‌پور، بردیا محمدی، جواد هزاره، پویا یوسفی
+				
+				\vspace{1.5cm}
+				\textbf{\today}
+			}
+		\end{Large}
+		
+	\end{center}
+	\thispagestyle{empty}
+\end{titlepage}	
 
+\pagebreak
 
-%%% header of pages
-\newpage
-\pageheader
 \tableofcontents
+\thispagestyle{empty}
+\pagebreak
 
-\newpage
 
- \Large \textbf{}
-%%%
-\begin{section-container}{شرح وظایف}
-\end{section-container}
+\section*{شرح وظایف}
+\markright{شرح وظایف}
 
 
 \pagebreak
 
 
 
-\begin{section-container}{مقدمه}
+\section{مقدمه}
 	
 	\subsection{تعریف الگوریتم}
 	الگوریتم مورد استفاده الگوریتم ضرب ماتریسی \lr{Cannon} می‌باشد در این الگوریتم با تقسیم کردن ماتریس‌های ورودی و خروجی به بلاک‌های $k*k$ که در آن $k$ عدد ثابتی می‌باشد می‌خواهیم با داشتن تعدادی پردازنده‌ که به صورت موازی کار می‌کنند عملیات ضرب ماتریسی را بهبود ببخشیم. به طور مثال ماتریس‌ها زیر را در نظر بگیرید:
@@ -56,14 +128,34 @@
 	\label{1}
 	\end{equation}
 	
-	با داشتن تعداد تعداد مشخصی ضرب کننده‌ی ماتریسی $k*k$ می‌توانیم این به طور موازی با استفاده از آنها حاصل نهایی $A\times B$ را محاسبه کنیم. 
-	\pagebreak
+	با داشتن تعداد تعداد مشخصی ضرب کننده‌ی ماتریسی $k*k$ می‌توانیم  به طور موازی با استفاده از آنها  و پخش ‌کردن $C_{ij}$ ها بین پردازنده‌های مختلف حاصل نهایی $A\times B$ را محاسبه کنیم. 
+
+در ادامه‌ی این گزارش از علائم ریاضی‌ای استفاده می‌شود که در اینجا به شرح‌ آنها می‌پردازیم.
 	
 \subsection{قرارداد‌های ریاضی}
 
-توجه می‌کنیم که در ادامه‌ی این گزارش و توضیحات لازمه در نظر می‌گیریم که ماتریس‌های ورودی $A_{mr}$ و $B_{rn}$ خواهند بود و بنابراین ماتریس‌ خروجی به صورت
+ورودی الگوریتم مورد استفاده  ماتریس‌های مستطیلی $A_{mr}$ و $B_{rn}$ خواهند بود و بنابراین ماتریس‌ خروجی به صورت
 $A_{mr} \times B_{rn} = C_{mn}$
-خواهد بود. همچنین لازم است که توجه داشته باشید که وقتی ماتریس‌ها را به فرم بلوکی می‌نویسیم مقادیر زیر را تعریف می‌کنیم:
+خواهد بود. با این‌ حال در هر کجای گزارش که از عبارت $A_{ij}$ (و همینطور برای $B,C$) استفاده شد منظور بلاک‌ $k*k$ ستون $i$ام و سطر $j$ام می‌باشد. برای روشن‌تر شدن این موضوع به مثال زیر توجه می‌کنیم، فرض کنید ماتریس $A$ به صورت زیر باشد:
+
+	$$ A_{mr} = \begin{bmatrix}
+	a_{00}& a_{01}& \dots& a_{0r}\\
+	\vdots& \vdots& \ddots& \vdots\\
+	a_{m0}& a_{m1}& \dots& a_{mr}
+	\end{bmatrix} $$
+	
+	حال اگر این ماتریس را به بلوک‌های $k*k$ تقسیم کنیم و در صورت لزوم درایه‌های نهایی را صفر قرار دهیم ماتریسی به فرم زیر خواهیم داشت:
+	
+	$$ A^* = \begin{bmatrix}
+	\begin{array}{cccc|c}
+		A_{00} & A_{01} & \dots & A_{0\mu-1} &  \\
+		\vdots & \vdots & \ddots & \vdots & 0 \\
+		A_{\lambda-10} & A_{\lambda-11} & \dots & A_{\lambda\mu-1} & \\
+		\hline
+			& 0 & & & 0
+	\end{array}
+	\end{bmatrix} $$
+که لازم است که توجه داشته باشیم که وقتی ماتریس‌ها را به فرم بلوکی می‌نویسیم مقادیر زیر را تعریف می‌کنیم:
 \begin{subequations}
 	\begin{equation}
 		\mu = \ceil*{\dfrac{r}{k}}
@@ -72,11 +164,11 @@ $A_{mr} \times B_{rn} = C_{mn}$
 		\lambda = \ceil*{\dfrac{m}{k}}
 	\end{equation}
 	\begin{equation}
-	\gamma = \ceil*{\dfrac{n}{k}}
+		\gamma = \ceil*{\dfrac{n}{k}}
 	\end{equation}
 	\label{2}
 \end{subequations}
-از این نماد‌ها به کرّات در طول گزارش استفاده خواهد شد. توجه می‌کنیم که علت اینکه سقف این حاصل تقسیم‌ها را در نظر گرفتیم همان است که اگر اندازه‌ی ماتریس‌ها بر $k$ بخش‌پذیر نباشد با اضافه کردن صفر به انتها‌ی آن باعث بخش‌پذیری می‌شویم. 
+از این نماد‌ها به کرّات در طول گزارش استفاده خواهد شد. توجه می‌کنیم که علت اینکه سقف این حاصل تقسیم‌ها را در نظر گرفتیم همان است که اگر اندازه‌ی ماتریس‌ها بر $k$ بخش‌پذیر نباشند با اضافه کردن صفر به انتها‌ی آن باعث بخش‌پذیری می‌شویم. 
 \subsection{نحوه‌ی عملکرد از نظر مساحت و تایمینگ}
 از آنجایی که هر ضرب کننده‌ی ماتریسی در حدود
  $k^3$
@@ -86,6 +178,9 @@ $A_{mr} \times B_{rn} = C_{mn}$
 \begin{equation}
 	\dfrac{\lambda\gamma\mu k^2}{\text{\lr{\#number of PU}}} = 	\dfrac{\lambda\gamma\mu k^2}{p}
 \end{equation}
+
+همچنین تعداد رجیستر‌هایی که هر واحد ضرب‌کننده‌ی ماتریس مربعی نیاز دارد از $O(k^2)$ می‌باشد. و بنابراین تعداد تمام رجیستر‌هایی که مورد نیاز است از $O(pk^2)$ می‌باشد.
+
 	\pagebreak
 
 \subsection{استاندارد‌ \lr{IEEE 754}}
@@ -105,6 +200,7 @@ $A_{mr} \times B_{rn} = C_{mn}$
 \text{value} = (-1)^{sign} \times 2^{(E-127)} \times (1 + \sum_{i=1}^{23}b_{23-i}2^{-i})
 \end{equation}
  
+ \pagebreak
 
 \subsection{مراجع مورد استفاده}
 
@@ -127,13 +223,14 @@ $A_{mr} \times B_{rn} = C_{mn}$
 \end{thebibliography}
 \end{latin}
 
-\end{section-container}
+\pagebreak
 
-\begin{section-container}{توصیف معماری سیستم}
+\section{توصیف معماری سیستم}
 \subsection{اینترفیس‌های سیستم و قرارداد استفاده از آن }
 به طور کلی سخت‌افزار از یک حافظه و بخش محاسبه‌ی ضرب ماتریسی تشکیل شده است که پردازنده‌ می‌تواند ورودی‌ها را درون حافظه قرار داده و خروجی‌ها را نیز از آن بخواند.
 (\lr{I/O Map}). 
 با این حال قرارداد‌هایی در نحوه‌ی استفاده از مموری وجود دارد که باید به آن توجه شود. ساختار کلی حافظه به صورت زیر خواهد بود:
+\vspace{3cm}
 \begin{table}[h]
 	\centering
 	\begin{tabular}{clll}
@@ -162,6 +259,7 @@ $A_{mr} \times B_{rn} = C_{mn}$
 	\caption{شماتیک حافظه}
 \end{table}
 
+\pagebreak
 
 که در آن هر یک از $A_{ij} , B_{ij} , C_{ij}$ها یک بلوک $k*k$ خواهند بود و باید آن‌ها را به صورت سطری در خانه‌های پشت سر هم حافظه نوشت. برای مثال اگر ماتریس $A$ به صورت زیر باشد:
 $$ A = \begin{bmatrix}
@@ -191,6 +289,7 @@ $k=2$
 				\multicolumn{4}{|c|}{$\vdots$}                                        \\ \hline
 		\multicolumn{4}{|l|}{\cellcolor[HTML]{595959}{\color[HTML]{595959}aaaaaaaaaaaaaaaaaaaaa }} \\ \hline   
 	\end{tabular}
+ 	\caption{شماتیک حافظه برای مثال داده‌ شده}
 \end{table}
 
 به عبارتی وظیفه‌ی بلوک کردن ماتریس و همچنین صفر قرار دادن خانه‌های اضافی به عهده‌ی \lr{CPU} خواهد بود. \\ 
@@ -198,12 +297,14 @@ $k=2$
 
 \begin{table}[h]
 	\centering
-	\begin{tabular}{|c|c|c|c|}
-				\hline
-				$\lambda$ & $\gamma$ & $\mu$ & $\theta$ \\ \hline
+	\begin{tabular}{cccc}
+		\hline
+		\multicolumn{1}{|c|}{$\lambda$} & \multicolumn{1}{c|}{$\gamma$} & \multicolumn{1}{c|}{$\mu$} & \multicolumn{1}{c|}{$\theta$} \\ \hline
+		$\overbrace{8 \ bits}$ & $\overbrace{8 \ bits}$             & $\overbrace{8 \ bits}$ & $\overbrace{8 \ bits}$                     
 	\end{tabular}
 \end{table}
-که هر کدام ۸بیت خواهند بود و مقادیر این پارامتر‌ها در 
+
+که مقادیر این پارامتر‌ها در 
 \autoref{2}
 مشخص شده است و البته باید توجه داشته باشید که مقدار $\theta$ نیز از رابطه‌ی زیر محاسبه می‌شود:
 \begin{equation}
@@ -335,8 +436,6 @@ $k=2$
 	\includegraphics[width=0.87\linewidth]{source/tree.png}
 	\caption{\lr{Design Hierarchy}}
 \end{figure}
-
-\end{section-container}
 
 \pagebreak
 \section{روند شبیه‌سازی و نتایج حاصل}
