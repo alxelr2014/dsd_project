@@ -1,5 +1,5 @@
 
-module processor #(parameter size , parameter cell_width , parameter register_address_width , parameter index_width ,parameter memory_size ,parameter memory_size_log  , parameter width = cell_width * size  ) 
+module processor #(parameter size , parameter cell_width , parameter register_address_width = $clog2(size^2) , parameter index_width ,parameter memory_size ,parameter memory_size_log  , parameter width = cell_width * size  ) 
 ( input in_clk,
  input in_reset,
  input in_grant,
