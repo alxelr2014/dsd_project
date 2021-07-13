@@ -6,11 +6,11 @@ from FpArithmetic import FpArithmetic
 import linecache
 
 ABSOLUTE_PATH = "C:/Users/emadz/Desktop/School/Books/Semester IV/Digital System Design/Project/"
-RELATIVE_PATH = "Coprocessor/" # "GoldenModel/" #
+RELATIVE_PATH = "test/" # "GoldenModel/" #
 def memory_init():
-    a_row = 7
-    b_row = 9
-    b_col = 1
+    a_row = 5
+    b_row = 5
+    b_col = 5
     num_processor = 1
     sub_matrix = 3
     con_lambda = math.ceil(a_row / sub_matrix)
@@ -26,10 +26,10 @@ def memory_init():
     config = format(con_theta, '02x') + format(con_mu, '02x') + \
         format(con_gamma, '02x') + format(con_lambda, '02x')
     status = "80000000"
-    cannon.main_algo()
+    print(cannon.test())
 
     f = open(
-        ABSOLUTE_PATH + RELATIVE_PATH + " memory_tb_init.txt",
+        ABSOLUTE_PATH + RELATIVE_PATH + "memory_tb_init.txt",
         "w")
     f.write(config + '\n')
     f.write(status + '\n')
@@ -93,8 +93,8 @@ def memory_init():
 def memory_check():
     memory_size = 256
     init_address = (2*(memory_size + 2)) //3 + 3
-    rows = 5
-    cols = 5
+    rows = 7
+    cols = 1
     size = 3
     num_blocks = math.ceil(rows / size) * math.ceil(cols / size)
     stop_line = num_blocks * size * size + 1
@@ -104,7 +104,7 @@ def memory_check():
         print(line_result.strip() , " " , line_check.strip())
         if line_result != line_check:
             print("DIFFERENT")
-            return
+
     print("SAME")
 
 def register_init():

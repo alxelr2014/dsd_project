@@ -38,12 +38,12 @@ module top_module_tb;
     	#(0.1*half_cc) reset = 1'b0;
 	    #(0.9*half_cc) reset = 1'b1;
         #(half_cc)
-        $readmemh("C:/Users/LEGION/Desktop/DSD_Project/dsd_project/Coprocessor/memory_tb_init.txt", matrix_multiplier.Memory.memory);
+        $readmemh("C:/Users/LEGION/Desktop/DSD_Project/dsd_project/Coprocessor/test/memory_tb_init.txt", matrix_multiplier.Memory.memory);
     end
 
     //Monitoring
     initial begin
-        $monitor("@#clk = %d\n, Memory_Address = %h, Memory_Write_Data = %h, Memory_Read_Data = %h\n Memory_Read_Enable = %b, Memory_Write_Enable = %b \n Requests = %b, Grants = %b \n Main_CU_Status = %b \n Config in memory = %h \n Status in memory = %h \n Index Received = %b \n Row Index = %d \n Column Index = %d \n Processors State: %b - %b - %b - %b \n Result Ready = %b "
+        $monitor("@#clk = %d\n, Memory_Address = %h, Memory_Write_Data = %h, Memory_Read_Data = %h\n Memory_Read_Enable = %b, Memory_Write_Enable = %b \n Requests = %b, Grants = %b \n Main_CU_Status = %b \n Config in memory = %h \n Status in memory = %h \n Index Received = %b \n Row Index = %d \n Column Index = %d \n Processors State: %b - %b - %b - %b \n Result Ready = %b"
         , clk_count
         , matrix_multiplier.Memory_Address
         , matrix_multiplier.Memory_Write_Data
@@ -63,6 +63,8 @@ module top_module_tb;
         , matrix_multiplier.Processors[2].PU.control_unit.r_State
         , matrix_multiplier.Processors[3].PU.control_unit.r_State
         , matrix_multiplier.Processor_Resault_Ready
+        // , matrix_multiplier.Processors[0].PU.reg_address
+        // , matrix_multiplier.Processors[0].PU.n_sqm_out_data
         );
     end
 
