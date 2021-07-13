@@ -17,10 +17,10 @@ module index_to_address_tb;
 	initial begin
 		//#proccessor = 4, theta = 16, mu = 4, gamma = 8, lambda = 8
 		r_config <= 32'b00001000000001000000100000001000;
-		
+
 		row_index <= 0;
 		column_index <= 5;
-		type <= 3'b000;
+		type <= 3'b001;
 
 		#2
 		row_index <= 2;
