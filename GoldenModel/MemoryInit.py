@@ -3,12 +3,14 @@ import math
 import numpy as np
 from CannonAlgoBU import CannonBotUp, ProcessingUnit
 from FpArithmetic import FpArithmetic
+import linecache
 
-
+ABSOLUTE_PATH = "C:/Users/emadz/Desktop/School/Books/Semester IV/Digital System Design/Project/"
+RELATIVE_PATH = "Coprocessor/" # "GoldenModel/" #
 def memory_init():
-    a_row = 5
-    b_row = 5
-    b_col = 5
+    a_row = 7
+    b_row = 9
+    b_col = 1
     num_processor = 1
     sub_matrix = 3
     con_lambda = math.ceil(a_row / sub_matrix)
@@ -17,7 +19,7 @@ def memory_init():
     con_theta = math.ceil((con_lambda * con_gamma) / num_processor)
 
     fp = FpArithmetic(
-        executable_path="C:/Users/emadz/Desktop/School/Books/Semester IV/Digital System Design/Project/GoldenModel/chromedriver.exe")
+        executable_path= ABSOLUTE_PATH +  "GoldenModel/chromedriver.exe")
     lo, hi = int("0x38D1B717", 16), int("0x42C80000", 16)
     cannon = CannonBotUp(a_row, b_row, b_col,
                          num_processor, sub_matrix, lo, hi, fp)
@@ -27,7 +29,7 @@ def memory_init():
     cannon.main_algo()
 
     f = open(
-        "C:/Users/emadz/Desktop/School/Books/Semester IV/Digital System Design/Project/Coprocessor/memory_tb_init.txt",
+        ABSOLUTE_PATH + RELATIVE_PATH + " memory_tb_init.txt",
         "w")
     f.write(config + '\n')
     f.write(status + '\n')
@@ -45,7 +47,7 @@ def memory_init():
                 # print(format(int(_element), '08x'))
     f.close()
     f = open(
-        "C:/Users/emadz/Desktop/School/Books/Semester IV/Digital System Design/Project/Coprocessor/processor_tb_check.txt",
+        ABSOLUTE_PATH + RELATIVE_PATH + "processor_tb_check.txt",
         "w")
     cannon.main_algo()
     for _list in cannon.partition(2):
@@ -56,7 +58,7 @@ def memory_init():
     f.close()
 
     f = open(
-        "C:/Users/emadz/Desktop/School/Books/Semester IV/Digital System Design/Project/Coprocessor/mem_visual.txt",
+        ABSOLUTE_PATH + RELATIVE_PATH + "mem_visual.txt",
         "w")
 
     for _list in cannon.partition(0):
@@ -88,13 +90,29 @@ def memory_init():
 
     print("Done")
 
+def memory_check():
+    memory_size = 256
+    init_address = (2*(memory_size + 2)) //3 + 3
+    rows = 5
+    cols = 5
+    size = 3
+    num_blocks = math.ceil(rows / size) * math.ceil(cols / size)
+    stop_line = num_blocks * size * size + 1
+    for _i in range(1,stop_line):
+        line_result = linecache.getline(ABSOLUTE_PATH + RELATIVE_PATH + "processor_tb_result.txt",init_address + _i)
+        line_check = linecache.getline(ABSOLUTE_PATH + RELATIVE_PATH + "processor_tb_check.txt",_i)
+        print(line_result.strip() , " " , line_check.strip())
+        if line_result != line_check:
+            print("DIFFERENT")
+            return
+    print("SAME")
 
 def register_init():
     size = 6
     width = 32
     lo, hi = int("0x00800000", 16), int("0x7f7fffff", 16)
     f = open(
-        "C:/Users/emadz/Desktop/School/Books/Semester IV/Digital System Design/Project/Coprocessor/register_tb_init.txt",
+        ABSOLUTE_PATH + RELATIVE_PATH + "register_tb_init.txt",
         "w")
     for _i in range(2*(size ** 2)):
         f.write(format(random.randint(lo, hi), 'x'))
@@ -119,7 +137,7 @@ def block_mult():
         matrix_b[_i][:] = [int(_s, 16) for _s in raw_input]
 
     fp = FpArithmetic(
-        executable_path="C:/Users/emadz/Desktop/School/Books/Semester IV/Digital System Design/Project/GoldenModel/chromedriver.exe")
+        executable_path=ABSOLUTE_PATH  + "GoldenModel/chromedriver.exe")
     processor = ProcessingUnit(size, fp)
     matrix_c = processor.matrix_mult(matrix_a, matrix_b)
 
@@ -142,7 +160,7 @@ def block_add():
         matrix_b[_i][:] = [int(_s, 16) for _s in raw_input]
 
     fp = FpArithmetic(
-        executable_path="C:/Users/emadz/Desktop/School/Books/Semester IV/Digital System Design/Project/GoldenModel/chromedriver.exe")
+        executable_path=ABSOLUTE_PATH + "GoldenModel/chromedriver.exe")
     processor = ProcessingUnit(size, fp)
     matrix_c = processor.matrix_add(matrix_a, matrix_b)
 
@@ -159,5 +177,5 @@ if int_input == 1:
     block_mult()
 if int_input == 2:
     memory_init()
-
-    ''' '''
+if int_input == 3:
+    memory_check()

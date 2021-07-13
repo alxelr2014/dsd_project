@@ -87,6 +87,6 @@ request <= 5'b00100;
 #(4*half_cc) 
 #(half_cc) request <= 5'b01100;
 #(5*half_cc) request <= 5'b00010;
-
+#(2*half_cc) request <= 5'b11010;
 end
 endmodule

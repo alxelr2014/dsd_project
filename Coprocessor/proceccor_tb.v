@@ -48,9 +48,13 @@ reg [width - 1: 0] in_data;
 reg read_en, write_en;
 
 wire [width - 1: 0] out_data;
+reg [cell_width - 1:0 ] in_status;
+reg in_write_status_en;
+wire [cell_width - 1: 0] out_status;
+wire [cell_width - 1: 0 ] out_config;
 
 memory #(.size(memory_size) , .blocks(size) , .log_size(memory_size_log) , .cell_width(cell_width) , .width(width)) memory (.in_address(address) , 
-.in_data(in_data), .in_read_en(read_en) , .in_write_en(write_en),.in_clk(clk) , .in_reset(reset), .out_data(out_data));
+.in_data(in_data), .in_read_en(read_en) , .in_write_en(write_en),.in_clk(clk) , .in_reset(reset), .out_data(out_data) ,.in_status (in_status) ,.in_write_status_en (write_status_en) , .out_status (out_status) , .out_config (out_config));
 
 assign memory_out_data = out_data;
 
@@ -146,5 +150,7 @@ $realtime, uut.reg_address, uut.reg_in_data, uut.reg_in_type , uut.reg_select_ma
 	end
 	#(2*half_cc);
 	end
+	$writememh("processor_tb_result.txt", memory.memory);
+	$finish;
 end
 endmodule

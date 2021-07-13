@@ -26,7 +26,7 @@ class ProcessingUnit:
             zeros = np.zeros((extra_rows, num_cols))
             res_matrix = np.concatenate((res_matrix, zeros), axis=0)
         if extra_cols < self.k:
-            zeros = np.zeros((num_rows + extra_rows, extra_cols))
+            zeros = np.zeros((num_rows +( extra_rows % self.k), extra_cols))
             res_matrix = np.concatenate((res_matrix, zeros), axis=1)
         return res_matrix
 
