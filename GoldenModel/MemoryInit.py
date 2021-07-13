@@ -6,11 +6,11 @@ from FpArithmetic import FpArithmetic
 import linecache
 
 ABSOLUTE_PATH = "C:/Users/emadz/Desktop/School/Books/Semester IV/Digital System Design/Project/"
-RELATIVE_PATH = "Coprocessor/" # "GoldenModel/" #
+RELATIVE_PATH = "test/" # "GoldenModel/" #
 def memory_init():
-    a_row = 7
-    b_row = 9
-    b_col = 1
+    a_row = 5
+    b_row = 5
+    b_col = 5
     num_processor = 1
     sub_matrix = 3
     con_lambda = math.ceil(a_row / sub_matrix)
@@ -26,7 +26,7 @@ def memory_init():
     config = format(con_theta, '02x') + format(con_mu, '02x') + \
         format(con_gamma, '02x') + format(con_lambda, '02x')
     status = "80000000"
-    cannon.main_algo()
+    print(cannon.test())
 
     f = open(
         ABSOLUTE_PATH + RELATIVE_PATH + "memory_tb_init.txt",

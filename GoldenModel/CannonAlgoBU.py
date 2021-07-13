@@ -186,7 +186,7 @@ class CannonBotUp:
             for _j in range(self.n):
                 print(hex(int(matrix_d[_i][_j])), end = " ")
             print()
-
+        self.matrix_c = matrix_d
         return verify(self.matrix_c, matrix_d)
 
 """
