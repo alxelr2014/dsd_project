@@ -6,7 +6,7 @@ from FpArithmetic import FpArithmetic
 import linecache
 
 ABSOLUTE_PATH = "C:/Users/emadz/Desktop/School/Books/Semester IV/Digital System Design/Project/"
-RELATIVE_PATH = "test/" # "GoldenModel/" #
+RELATIVE_PATH = "theta2Test/" # "GoldenModel/" #
 def memory_init():
     a_row = 5
     b_row = 4
