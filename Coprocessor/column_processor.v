@@ -83,6 +83,7 @@ module column_processor #(parameter size = 4, parameter cell_width = 32 ,paramet
 	
 	r_states <= s_IDLE;
 	end
+	else begin
 
 	case (r_states)
 	s_IDLE: begin 
@@ -182,5 +183,6 @@ module column_processor #(parameter size = 4, parameter cell_width = 32 ,paramet
 			r_states <= s_IDLE;
 		end
 	endcase
+	end
 	end
 endmodule

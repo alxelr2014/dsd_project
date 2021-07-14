@@ -85,6 +85,7 @@ always @(posedge i_Clock, negedge i_Reset) begin
         o_Memory_Read_Enable <= 0;
         o_P_Ready_Stable <= 0;
     end
+	 else begin
     case (r_State)
         s_Idle: begin
             // o_Result_Ready <= 0;
@@ -172,6 +173,7 @@ always @(posedge i_Clock, negedge i_Reset) begin
         end
         default: r_State <= s_Idle;
     endcase
+	 end
 end
 
 

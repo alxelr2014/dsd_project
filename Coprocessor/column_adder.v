@@ -62,6 +62,7 @@ always @(posedge in_clk, negedge in_reset) begin
 	r_add_z_ack <= 0;
 	out_ready <= 0;
 	end
+	else begin
 	
 	case (r_state) 
 	s_IDLE: begin
@@ -152,5 +153,6 @@ always @(posedge in_clk, negedge in_reset) begin
 			r_state <= s_IDLE;
 		end
 	endcase
+end
 end
 endmodule
