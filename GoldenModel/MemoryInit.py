@@ -6,13 +6,13 @@ from FpArithmetic import FpArithmetic
 import linecache
 
 ABSOLUTE_PATH = "C:/Users/emadz/Desktop/School/Books/Semester IV/Digital System Design/Project/"
-RELATIVE_PATH = "theta2Test/" # "GoldenModel/" #
+RELATIVE_PATH = "5Processors/" # "GoldenModel/" #
 def memory_init():
     a_row = 5
     b_row = 4
     b_col = 7
-    num_processor = 4
-    sub_matrix = 3
+    num_processor = 5
+    sub_matrix = 4
     con_lambda = math.ceil(a_row / sub_matrix)
     con_gamma = math.ceil(b_col / sub_matrix)
     con_mu = math.ceil(b_row / sub_matrix)
