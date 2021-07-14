@@ -1,0 +1,83 @@
+\documentclass{perassignments}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{intcalc}
+\usepackage{perheader}
+\usepackage[abjad]{pertheorems}
+\usepackage{common}
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{multirow}
+\usepackage{hyperref}
+\usepackage{polyglossia}
+
+\setdefaultlanguage{persian}
+
+
+\usepackage{xepersian}
+\settextfont{XBNiloofar}
+\setmathdigitfont{XBTabriz}
+\allowdisplaybreaks
+\begin{document}
+در مدل طلایی برای ضرب و جمع اعشاری IEEE754 از سایت
+\lr{http://weitz.de/ieee}
+استفاده کردیم. برای ضرب ماترسی ابتدا دو ماتریس که درایه‌هایشان به طور تصادفی از اعداد بین دو عدد
+   \(\text{\lr{0x3A83126F}} = 0.001\)
+   و
+ \({\text{\lr{0x42C80000}} = 100.0}\)
+ انتخاب می‌شوند درست کردیم و سپس با الگوریتم معمولی ضرب ماتریسی و ماژول‌های ضرب و جمع اعشاری  این دو ماتریس را در هم ضرب کردیم. در نهایت مقادیر دو ماتریس ورودی در فایل
+\lr{ memory\_tb\_init.txt} 
+قرار می‌دهیم و ماتریس جواب را در فایل
+\lr{processor\_tb\_check.txt}
+ را بارگذاری می‌کنیم تا با مقادیر تولید شده توسط سخت افزار مقایسه کنیم. 
+ 
+\begin{center}
+	\begin{tabular}{|p{3cm}|p{9cm}|p{2cm}|}
+		\hline
+		اعضای گروه & وظایف & درصد مشارکت 
+		\\ \hline
+		محمد جواد هزاره & طراحی
+		\lr{Main Control Unit}
+		 و تست‌بنچ، تکمیل طراحی
+		\lr{Top module}
+		 و تست‌بنچ. & 
+		 \lr{20\%} 
+
+		\\ \hline
+		مازیار شمسی‌پور & 
+		طراحی
+		\lr{Control Unit} 
+		و تست‌بنچ، طراحی 
+		\lr{Top Module}
+		و تست‌بنچ. تکمیل گزارش &
+	  \lr{20\%} 
+		\\ \hline
+		عماد زین‌اوقلی & طراحی 
+		\lr{Memory} 
+		و 
+		\lr{Arbiter}
+		و تست‌بنچ، تکمیل طراحی 
+		\lr{Matrix Multiplier}
+		و تست‌بنچ. &
+		 \lr{20\%} 
+		\\ \hline 
+		پویا یوسفی &  طراحی 
+		\lr{Golden Model}
+		و انجام عملیات سنتز. تکمیل گزارش &
+		 \lr{20\%} 
+		\\ \hline 
+		بردیا محمدی & طراحی 
+		\lr{Matrix Multiplier}
+		و تست‌بنچ. تکمیل گزارش&
+		 \lr{20\%} 
+		\\ \hline
+		
+	\end{tabular}
+\end{center}
+\end{document}
+
