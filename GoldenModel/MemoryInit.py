@@ -18,8 +18,7 @@ def memory_init():
     con_mu = math.ceil(b_row / sub_matrix)
     con_theta = math.ceil((con_lambda * con_gamma) / num_processor)
 
-    fp = FpArithmetic(
-        executable_path= ABSOLUTE_PATH +  "GoldenModel/chromedriver.exe")
+    fp = FpArithmetic()
     lo, hi = int("0x38D1B717", 16), int("0x42C80000", 16)
     cannon = CannonBotUp(a_row, b_row, b_col,
                          num_processor, sub_matrix, lo, hi, fp)
@@ -137,8 +136,7 @@ def block_mult():
         raw_input = input().split(" ")
         matrix_b[_i][:] = [int(_s, 16) for _s in raw_input]
 
-    fp = FpArithmetic(
-        executable_path=ABSOLUTE_PATH  + "GoldenModel/chromedriver.exe")
+    fp = FpArithmetic()
     processor = ProcessingUnit(size, fp)
     matrix_c = processor.matrix_mult(matrix_a, matrix_b)
 
@@ -160,8 +158,7 @@ def block_add():
         raw_input = input().split(" ")
         matrix_b[_i][:] = [int(_s, 16) for _s in raw_input]
 
-    fp = FpArithmetic(
-        executable_path=ABSOLUTE_PATH + "GoldenModel/chromedriver.exe")
+    fp = FpArithmetic()
     processor = ProcessingUnit(size, fp)
     matrix_c = processor.matrix_add(matrix_a, matrix_b)
 
