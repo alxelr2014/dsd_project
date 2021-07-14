@@ -115,7 +115,7 @@ always @(negedge in_reset) begin
 
 	r_states <= s_IDLE;
 	end
-	
+	else begin
 	case (r_states)
 	s_IDLE: begin 
 		out_reg_address <= 0;
@@ -467,5 +467,6 @@ always @(negedge in_reset) begin
 	r_states <= s_IDLE;
 	end
 	endcase
+	end
 	end
 endmodule

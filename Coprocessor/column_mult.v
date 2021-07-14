@@ -61,6 +61,7 @@ r_mult_b_stb <= 0;
 r_mult_z_ack <= 0;
 out_ready <= 0;
 	end
+	else begin
 
 	case (r_state) 
 	s_IDLE: begin
@@ -147,6 +148,7 @@ out_ready <= 0;
 			r_state <= s_IDLE;
 		end
 	endcase
+	end
 end
 endmodule
 
