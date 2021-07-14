@@ -1,5 +1,5 @@
 
-module column_processor #(parameter size , parameter cell_width ,parameter width = cell_width * size )
+module column_processor #(parameter size = 4, parameter cell_width = 32 ,parameter width = cell_width * size )
        (input in_ready ,
         input [width-1:0] in_row_a,
         input [width - 1: 0] in_col_b,
@@ -45,7 +45,7 @@ module column_processor #(parameter size , parameter cell_width ,parameter width
 	.out_ack (r_mult_ack),
 	.out_ready (n_mult_out_ready),
 	.out_c (n_mult_out_z) );
-
+/*
         always @(negedge in_reset) begin
         out_cell_c <= 0;
         out_ready <= 0;
@@ -63,8 +63,27 @@ module column_processor #(parameter size , parameter cell_width ,parameter width
 	
 	r_states <= s_IDLE;
         end
+	*/
 	
-	always @(posedge in_clk) begin 
+	always @(posedge in_clk, negedge in_reset) begin 
+	if (~in_reset)begin
+	        out_cell_c <= 0;
+        out_ready <= 0;
+
+        r_adder_in <= 0;
+        r_adder_in_ready <= 0;
+ 	r_adder_reset <= 0;
+ 	r_adder_ack <= 0;
+
+	r_mult_in_a <= 0;
+        r_mult_in_b <= 0;
+        r_mult_in_ready <=0;
+	r_mult_ack <=0 ;
+	r_mult_reset<= 0;
+	
+	r_states <= s_IDLE;
+	end
+	else begin
 
 	case (r_states)
 	s_IDLE: begin 
@@ -164,5 +183,6 @@ module column_processor #(parameter size , parameter cell_width ,parameter width
 			r_states <= s_IDLE;
 		end
 	endcase
+	end
 	end
 endmodule
