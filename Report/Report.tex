@@ -22,6 +22,28 @@
 \DeclarePairedDelimiter\ceil{\lceil}{\rceil}
 \DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
 
+\definecolor{vgreen}{RGB}{104,180,104}
+\definecolor{vblue}{RGB}{49,49,255}
+\definecolor{vorange}{RGB}{255,143,102}
+
+\lstdefinestyle{verilog-style}
+{
+	language=Verilog,
+	basicstyle=\small\ttfamily,
+	keywordstyle=\color{vblue},
+	identifierstyle=\color{black},
+	commentstyle=\color{vgreen},
+	numbers=left,
+	numberstyle=\tiny\color{black},
+	numbersep=10pt,
+	tabsize=8,
+	frame=single,
+	literate=*{:}{{\textcolor{black}{:}}}1
+}
+
+\lstset{style=verilog-style}
+
+
 
 \pagestyle{fancy}
 \fancyhf{}
@@ -166,6 +188,10 @@ $A_{mr} \times B_{rn} = C_{mn}$
 	\begin{equation}
 		\gamma = \ceil*{\dfrac{n}{k}}
 	\end{equation}
+	\begin{equation}
+	\theta = \ceil{\dfrac{\lambda\gamma}{\text{\lr{\#Matrix Processors}}}}
+	\end{equation}
+	
 	\label{2}
 \end{subequations}
 از این نماد‌ها به کرّات در طول گزارش استفاده خواهد شد. توجه می‌کنیم که علت اینکه سقف این حاصل تقسیم‌ها را در نظر گرفتیم همان است که اگر اندازه‌ی ماتریس‌ها بر $k$ بخش‌پذیر نباشند با اضافه کردن صفر به انتها‌ی آن باعث بخش‌پذیری می‌شویم. 
@@ -199,6 +225,8 @@ $A_{mr} \times B_{rn} = C_{mn}$
 \begin{equation}
 \text{value} = (-1)^{sign} \times 2^{(E-127)} \times (1 + \sum_{i=1}^{23}b_{23-i}2^{-i})
 \end{equation}
+
+\subsection{کاربرد‌ها}
  
  \pagebreak
 
@@ -227,10 +255,11 @@ $A_{mr} \times B_{rn} = C_{mn}$
 
 \section{توصیف معماری سیستم}
 \subsection{اینترفیس‌های سیستم و قرارداد استفاده از آن }
-به طور کلی سخت‌افزار از یک حافظه و بخش محاسبه‌ی ضرب ماتریسی تشکیل شده است که پردازنده‌ می‌تواند ورودی‌ها را درون حافظه قرار داده و خروجی‌ها را نیز از آن بخواند.
-(\lr{I/O Map}). 
-با این حال قرارداد‌هایی در نحوه‌ی استفاده از مموری وجود دارد که باید به آن توجه شود. ساختار کلی حافظه به صورت زیر خواهد بود:
-\vspace{3cm}
+به طور کلی  و از نگاه بالا سخت‌افزار از یک حافظه و و کمک-پردازنده‌ی ضرب ماتریسی\footnote{\lr{Matrix Multiplier - Co-processor}} تشکیل شده است که پردازنده برای استفاده از‌ می‌تواند ورودی‌ها را درون حافظه قرار داده و خروجی‌ها را نیز از آن بخواند(\lr{I/O Mapped}). 
+\\ برای استفاده از این  کمک-پردازنده قرارداد‌هایی در نحوه‌ی استفاده از مموری وجود دارد که باید به آن توجه شود.
+
+\subsubsection{ساختار کلی حافظه} ساختار کلی حافظه به صورت زیر خواهد بود:
+\vspace{2cm}
 \begin{table}[h]
 	\centering
 	\begin{tabular}{clll}
@@ -258,19 +287,33 @@ $A_{mr} \times B_{rn} = C_{mn}$
 	\end{tabular}
 	\caption{شماتیک حافظه}
 \end{table}
+\vspace{1.5cm}
+
+که در آن هر یک از $A_{ij} , B_{ij} , C_{ij}$ها یک بلوک $k*k$ خواهند بود و باید آن‌ها را به صورت سطری در خانه‌های پشت سر هم حافظه نوشت. 
 
 \pagebreak
-
-که در آن هر یک از $A_{ij} , B_{ij} , C_{ij}$ها یک بلوک $k*k$ خواهند بود و باید آن‌ها را به صورت سطری در خانه‌های پشت سر هم حافظه نوشت. برای مثال اگر ماتریس $A$ به صورت زیر باشد:
+برای مثال اگر ماتریس‌های 
+$B,A$ به صورت زیر باشند:
 $$ A = \begin{bmatrix}
 1& 2 & 3\\
 4& 5 & 6
-\end{bmatrix} $$
-
-و در صورتی که 
+\end{bmatrix} , 
+B = \begin{bmatrix}
+1& 2 \\
+3& 4 \\
+5& 6
+\end{bmatrix}
+$$
+و ماتریس خروجی به صورت 
+$ C = \begin{bmatrix}
+22& 28 \\
+48& 64
+\end{bmatrix}
+ $
+ خواهد بود. در صورتی که 
 $k=2$
-و به عبارتی بلوک‌ها $2*2$ باشند \lr{CPU} باید آن را به صورت زیر در حافظه قرار دهد:
-
+و به عبارتی واحد‌های درونی ضرب کننده‌های ماتریس مربعی ما توانایی ضرب بلوک‌های $2*2$ را داشته‌ باشند؛ \lr{CPU} باید آن را به صورت زیر در حافظه قرار دهد و همچنین بلوک‌های خروجی را از بخش‌های مشخص شده استخراج کند:
+:
 \begin{table}[h]
 	\centering
 	\begin{tabular}{clll}
@@ -286,14 +329,33 @@ $k=2$
 				\multicolumn{4}{|c|}{0}                                        \\ \hline
 					\multicolumn{4}{|c|}{6}                                        \\ \hline
 										\multicolumn{4}{|c|}{0}                                        \\ \hline
-				\multicolumn{4}{|c|}{$\vdots$}                                        \\ \hline
-		\multicolumn{4}{|l|}{\cellcolor[HTML]{595959}{\color[HTML]{595959}aaaaaaaaaaaaaaaaaaaaa }} \\ \hline   
+		\multicolumn{4}{|c|}{1}                                        \\ \hline
+		\multicolumn{4}{|c|}{2}                                        \\ \hline
+		\multicolumn{4}{|c|}{3}                                        \\ \hline
+		\multicolumn{4}{|c|}{4}                                        \\ \hline
+		\multicolumn{4}{|c|}{5}                                        \\ \hline
+		\multicolumn{4}{|c|}{6}                                        \\ \hline
+		\multicolumn{4}{|c|}{0}                                        \\ \hline
+		\multicolumn{4}{|c|}{0}                                        \\ \hline
+		\multicolumn{4}{|l|}{\cellcolor[HTML]{595959}{\color[HTML]{595959}aaaaaaaaaaaaaaaaaaaaa }} \\ \hline  
+		\multicolumn{4}{|c|}{22}                                        \\ \hline
+		\multicolumn{4}{|c|}{28}                                        \\ \hline
+		\multicolumn{4}{|c|}{48}                                        \\ \hline
+		\multicolumn{4}{|c|}{64}                                        \\ \hline
+		 \multicolumn{4}{|l|}{\cellcolor[HTML]{595959}{\color[HTML]{595959}aaaaaaaaaaaaaaaaaaaaa }} \\ \hline  
 	\end{tabular}
+		
+	
+
  	\caption{شماتیک حافظه برای مثال داده‌ شده}
 \end{table}
-
-به عبارتی وظیفه‌ی بلوک کردن ماتریس و همچنین صفر قرار دادن خانه‌های اضافی به عهده‌ی \lr{CPU} خواهد بود. \\ 
-همچنین \lr{CPU} باید اولین خانه‌ی حافظه را که مربوط به کانفیگ می‌باشد به صورت زیر از اعداد پر کند:
+نکته حائز توجه دیگر نقطه‌ی شروع ماتریس‌های خروجی می‌باشد که تنها‌ کافیست توجه شود که به جز دو خانه‌ی اول حافظه بقیه‌ی خانه‌ها به صورت یکسان بین ماتریس‌های ورودی و ماتریس خروجی تقسیم شده‌است. یعنی اگر اندازه‌ی کل مموری را $N$ در نظر بگیریم 
+$\ceil{\frac{N-2}{3}}$
+خانه به خروجی اختصاص پیدا می‌کند. 
+\pagebreak
+\subsubsection{خانه‌ی اول حافظه}
+ \lr{CPU} 
+ باید اولین خانه‌ی حافظه را که مربوط به کانفیگ می‌باشد به صورت زیر از اعداد پر کند:
 
 \begin{table}[h]
 	\centering
@@ -306,87 +368,241 @@ $k=2$
 
 که مقادیر این پارامتر‌ها در 
 \autoref{2}
-مشخص شده است و البته باید توجه داشته باشید که مقدار $\theta$ نیز از رابطه‌ی زیر محاسبه می‌شود:
-\begin{equation}
-	\theta = \dfrac{\lambda\gamma}{\text{\lr{\#Matrix Processors}}}
-\end{equation}
+مشخص شده است و همچنین باید توجه شود که مقدار $\theta$ نیز از رابطه‌ی زیر محاسبه می‌شود:
+
+برای مثال فرض کنیم که ماتریس‌های $A_{55}$ , $B_{55}$ در اختیار داشته باشیم. همچنین $4$ پردازنده‌ ضرب ماتریسی $3*3$ در اختیار داشته باشیم، پارامتر‌های مد نظر به صورت زیر محاسبه خواهند شد:
+
+\begin{subequations}
+	\begin{equation*}
+		\lambda = \ceil{\dfrac{m}{k}} = \ceil{\dfrac{5}{3}} = 2\\
+	\end{equation*}
+
+	\begin{equation*}
+		\gamma = \ceil{\dfrac{m}{k}} = \ceil{\dfrac{5}{3}} = 2\\
+	\end{equation*}
+
+	\begin{equation*}
+		\mu =  \ceil{\dfrac{m}{k}} = \ceil{\dfrac{5}{3}} = 2\\
+	\end{equation*}
+
+	\begin{equation*}
+		\theta = \ceil{\dfrac{\lambda\gamma}{\text{\lr{\#Matrix Processors}}}} = \ceil{\frac44} = 1
+	\end{equation*}
+	
+\end{subequations}
+
+و بنابراین خانه‌ی اول حافظه در هنگامی که کمک-پردازنده دستور شروع به کار را دریافت می‌کند باید به صورت زیر باشد:
+
+\begin{latin}
+\begin{table}[h]
+	\centering
+	\begin{tabular}{cccc}
+		\hline
+		\multicolumn{1}{|c|}{$0000 0001$} & \multicolumn{1}{c|}{$0000 0010$} & \multicolumn{1}{c|}{$0000 0010$} & \multicolumn{1}{c|}{$0000 0010$} \\ \hline                 
+	\end{tabular}
+\end{table}
+\end{latin}
+
+
+\subsubsection{خانه‌ی دوم حافظه}
+
 
 همچنین دومین خانه‌ی حافظه که مربوط به \lr{Status} می‌باشد مطابق شکل زیر می‌باشد.
 
+\begin{latin}
 \begin{table}[h]
 	\centering
 	\begin{tabular}{|c|c|c|c|c|}
 		\hline
-		\lr{CPU Ready} & \lr{MP Acknowledge} & $\dots$ &\lr{CPU Acknowledge} & \lr{MP Ready}\\ \hline
+		\lr{CPU Ready} & \lr{C-P Acknowledge} & $\dots$ &\lr{CPU Acknowledge} & \lr{C-P Ready}\\ \hline
 	\end{tabular}
 \end{table}
-وظیفه‌ی \lr{CPU} این است که بعد از قرار دادن ورودی‌ها و تنظیم کردن \lr{Config} مقدار بیت \lr{CPU Ready} را فعال کند و بعد از این که بیت \lr{Acknowledge} را از طرف ضرب کننده‌ی ماتریسی دریافت کرد به کارش ادامه دهد بعد از تمام شدن عملیات ماتریسی بیت \lr{MP Ready} فعال می‌شود و \lr{CPU} می‌تواند بلاک‌های ماتریس خروجی را از مکانی که در مموری مربوط به خروجی‌ها می‌باشد استخراج کند.
+\end{latin}
+وظیفه‌ی \lr{CPU} این است که بعد از قرار دادن ورودی‌ها و تنظیم کردن \lr{Config} مقدار بیت \lr{CPU Ready} را فعال کند و بعد از این که بیت \lr{Acknowledge} را از طرف کمک-پردازنده دریافت کرد به کارش ادامه دهد بعد از تمام شدن عملیات  ضرب ماتریسی بیت \lr{C-P Ready} فعال می‌شود و \lr{CPU} می‌تواند بلاک‌های ماتریس خروجی را از مکانی که در مموری مربوط به خروجی‌ها می‌باشد استخراج کند.
 
-با این تفاسیر تنها ورودی لازم به سخت‌افزار ریست آسنکرون می‌باشد. و با استفاده از مموری سخت‌‌افزار می‌تواند ورودی‌ها را از حافظه خوانده و آنها‌ را محاسبه کند.
-\subsection{کلاک سخت‌‌افزار}
+\subsubsection{نحوه‌ی دسترسی به حافظه}
+برای دسترسی به حافظه تمامی ماژول‌های موجود در سیستم و همچنین \lr{CPU} از یک \lr{Round-Robin Arbiter} استفاده می‌کنند، با این تفسیر که ماژولی بخواهد خط‌های متصل به حافظ\footnote{\lr{Memory Bus}}را تغییر دهد باید از \lr{Arbiter} اجازه‌ی دسترسی بگرد. و اگر \lr{Arbiter} سیگنال \lr{Grant} مربوط به آن ماژول را فعال کرد اجازه‌ی نوشتن روی حافظه در اختیار آن ماژول قرار می‌گیرد. برای روشن‌تر شدن این موضوع خوب است به شماتیک زیر توجه کنید:
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.5\linewidth]{source/arbiter.jpg}
+	\caption{\lr{Arbiter}}
+	\label{arbiter}
+\end{figure}
+
+\subsubsection{ریست آسنکرون}
+سخت‌افزار دارای یک سیگنال \lr{reset} آسنکرون می‌باشد که تمام رجیستر‌های درونش را صفر می‌کند.
+
+
+\subsubsection{کلاک سخت‌‌افزار}
 تمامی ماژول‌های این سخت‌افزار از جمله مموری و تمام ماژول‌های واحد حساب‌کننده‌ی ضرب ماتریسی به صورت سنکرون عمل می‌کنند و \lr{CDC} در این سخت‌افزار اتفاق نمی‌افتد.
 
-\subsection{دیاگرام‌های بلوکی سخت‌افزار}
-این سخت افزار شامل ماژول‌های زیر می‌باشد:
-\begin{itemize}
-	\item 
-	\lr{Memory}
-	\item 
-	\lr{Arbiter}
-	\item 
-	\lr{Main Control Unit}
-	\item 
-	\lr{Control Unit}
-	\item 
-	\lr{Processor Unit}
-	\item 
-	\lr{Matrix Multiplier}
-	\item 
-	\lr{Matrix Adder}
-	\item 
-	\lr{Index To Address Transformer}
-\end{itemize}
+\pagebreak
 
-	در اینجا به توصیف ورودی‌ خروجی‌ هر یک از آن‌ها و نحوه‌ی اتصال ‌آنها می‌پردازیم و در بخش بعد نحوه‌ی عملکرد هر یک را توضیح می‌دهیم:
-	
-\begin{figure}[h]
-	\centering
-	\includegraphics[width=0.5\linewidth]{source/main_cu.png}
-	\caption{\lr{Main Control Unit}}
-\end{figure}
+ابتدا ساختار درختی سخت‌افزار طراحی شده را می‌بینیم و سپس به مفسراً درباره‌ی نقش و عملکرد هر یک از ماژول‌های مربوطه صحبت خواهیم کرد.
+\subsection{ساختار درختی سیستم}
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[width=0.5\linewidth]{source/ControlUnit.png}
-	\caption{\lr{Control Unit}}
+	\includegraphics[width=0.87\linewidth]{source/tree.png}
+	\caption{\lr{Design Hierarchy}}
 \end{figure}
 
-\begin{figure}[h]
-	\centering
-	\includegraphics[width=0.5\linewidth]{source/Memory.png}
-	\caption{\lr{Memory}}
-\end{figure}
+\pagebreak
 	
 \subsection{توصیف ماژول‌ها}
 
 \begin{itemize}
 	\item 
-	\lr{Memory}:
-	واحد مموری سخت‌افزار که مطابق با استانداردی که ابتدا آورده شده است. این واحد شامل یک باس خروجی داده است که ماژول‌ها می‌توانند از آن استفاده کنند. همچنین دارای یک باس ورودی و باس آدرس می‌باشد که \lr{Arbiter} تعیین می‌کند که کدام ماژول حق استفاده از این باس ‌ها و همچنین حق استفاده از \lr{enable}های‌ خواندن و نوشتن را دارد.
+	\lr{Memory}
+	
+	\begin{figure}[h]
+		\centering
+		\includegraphics[width=0.6\linewidth]{source/Memory.png}
+		\caption{\lr{Memory Schematic}}
+	\end{figure}
+	
+	واحد حافظه سخت‌افزار که مطابق با استانداردی که در بخش‌های قبل مفسراً درباره‌ی آن توضیح دادیم می‌‌باشد.این واحد توانایی آدرس دهی به هر کلمه‌ را دارد(\lr{Word Addressable}). هر کلمه‌ی آن یک عدد ممیز شناور با استاندار \lr{IEEE 754 - Single Precision} می‌باشد.
+
+خواندن و نوشتن در آن این حافظه به منظور بهبود عملکرد زمانی به گونه‌ایست که در هر بار دسترسی به حافظه به تعداد $k$ کلمه در آن نوشته یا از آن خوانده می‌شود.
+	
+	هر ماژول دیگر در سخت افزار یا بیرون سخت افزار  برای دسترسی به باس ورودی‌های مموری باید از \lr{Arbiter} اجازه گرفته باشد یعنی مطابق \autoref{arbiter} باید سیگنال \lr{Request} خود را فعال کند و سپس منتظر بماند که سیگنال \lr{Grant} دریافت شود و بعد از آن می‌تواند عملیات‌های نوشتن و خواند روی حافظه را انجام دهد.
+	
+	از آنجایی که \lr{Config} و \lr{Status} مکررا مورد نیاز ماژول‌ها در برنامه قرار می‌گیرد تصمیم گرفتیم که خواندن و نوشتن این دو (البته فقط نوشتن در \lr{Status}) بدون نیاز داشتن به اجازه‌ی \lr{Arbiter} و توسط \lr{Main Controller} که در ادامه‌ آن را توضیح می‌دهیم صورت بگیرد.
+	\pagebreak
 	\item 
 	\lr{Arbiter}
-	این واحد نقش پخش کردن اجازه‌ی دسترسی به مموری را بین ماژول‌ها دارد، به \lr{FSM} زیر توجه کنید:
+	
+	\begin{figure}[h]
+		\centering
+		\includegraphics[width=0.5\linewidth]{source/arbiter1.png}
+		\caption{\lr{Arbiter Schematic}}
+	\end{figure}
+	
+	همانطور که برای \lr{Memory} توضیح دادیم	این واحد نقش پخش کردن اجازه‌ی دسترسی به مموری را بین ماژول‌ها دارد در \autoref{arbiter}  این موضوع مشخص است. مقدار پهنای ورودی و خروجی این ماژول متناسب با تعداد ماژول‌های دیگریست که اجازه‌ی دسترسی به حافظه را می‌خواهند. برای روشن شدن عملکرد این ماژول به \lr{FSM} زیر توجه کنید:
 	
 \begin{figure}[h]
 	\centering
-	\includegraphics[width=0.35\linewidth]{source/fsm_ar.jpg}
+	\includegraphics[width=0.4\linewidth]{source/fsm_ar.jpg}
 	\caption{\lr{Arbiter Fsm}}
 \end{figure}
 
-نحوه‌ی عملکرد این ماژول به این صورت است که یک صف بااهمیت از ماژول‌هایی که آن وصل هستند را نگه می‌دارم و در صورتی که ورودی \lr{Request} آن یک باشد به بااهمیت‌ترین ماژول متصل به خود اجازه‌ی دسترسی به حافظه را می‌دهد. سپس آن ماژول می‌تواند از مموری استفاده کند.
-	
+همانگونه که از این \lr{FSM} مشخص می‌باشد هر گاه یکی سیگنال‌های \lr{Request} فعال  باشد \lr{Arbiter} به حالت \lr{Grant} می‌رود و برای ماژولی که درخواست داده و اولویت بالاتری دارد \lr{Grant} تولید می‌کند. روشن است که سیگنال \lr{Grant}، \lr{Hot-Bit} می‌باشد. وقتی که سیگنال گرنت فعال شد \lr{Arbiter} منتظر می‌ماند که همان ماژولی که \lr{Grant} را دارد \lr{Request} خود را قطع کند. بعد از آن دوباره در صورتی که \lr{Request} داشتن ماژول دیگری به حالت تولید \lr{Grant} می‌رود و در غیر این صورت به حالت اولیه بازگشته و منتظر می‌ماند تا \lr{Request} یکی از ماژول‌ها فعال شود.
+
+\pagebreak
+
 	\item 
-	\lr{Control Unit}:
+\lr{Main Control Unit}
+این واحد وظیفه‌ی پخش کردن بلاک‌های $C_{ij}$ بین پردازنده‌ها را دارد به نمودار حالت زیر توجه می‌کنیم:
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.4\linewidth]{source/main_cu_fsm.png}
+	\caption{\lr{Main CU Fsm}}
+\end{figure}
+
+همان طور که از این نمودار حالت مشخص است هرگاه کلمه‌ی \lr{status} در حافظه نشان‌ دهنده \lr{Cpu\_Ready} باشد از حالت اولیه‌ خارج می‌شویم و از \lr{Arbiter} درخواست می‌کنیم که حافظه‌ را در اختیار ما بگذارد، سپس با داشتن کانفیگ می‌توانیم بین \lr{Processor}‌‌های مختلف اندیس‌ها را پخش کنیم. این کار به اندازه‌ی $\theta$بار انجام می‌دهیم تا نهایتا همه‌ی $C_{ij}$‌ها توسط پردازنده‌ها محاسبه شده و در مموری ذخیره شود. سپس با درخواست از \lr{Arbiter} دسترسی به حافظه را بدست می‌آوریم و کلمه‌ی \lr{status} را تغییر می‌دهیم تا \lr{CPU} متوجه به پایان رسیدن عملیات شود.
+
+\pagebreak
+
+\item 
+\lr{Processor}
+
+این واحد وظیفه‌ دارد که با دریافت یک $i,j$ و سیگنال‌های ورودی دیگر مقدار $C_{ij}$ را محاسبه کرده و در حافظه ذخیره کند. شماتیک این ماژول به صورت زیر می‌باشد. 
+
+شماتییییک
+
+در واقع این واحد که متشکل از \lr{Register File} ،
+\lr{Control Unit},
+\lr{Square Matrix Multiplier}
+می‌باشد وظیفه‌ی برقراری اتصالات بین این ماژول‌ها را دارد تا کارهای زیر به درستی انجام شود:
+
+\begin{enumerate}[(I)]
+	\item 
+	با توجه به \autoref{1}
+	آدرس
+	  $A_{ix}$ و $B_{xj}$
+	  از 	  \lr{Control Unit}  بگیرد و به مموری بدهد سپس متناسب با این اندیس‌ها آدرسی برای \lr{Register File} ایجاد کرده و سیگنال \lr{Write Enable} آن را فعال کند تا \lr{Register File} به درستی این ماتریس‌ها را از حافظه بخواند.
+	  
+	  \item 
+	  بعد از اینکه \lr{Register File} 	  $A_{ix}$ و $B_{xj}$ شد باید سیگنال \lr{Start} را از \lr{Control Unit} گرفته و به \lr{Square Matrix Multiplier} بدهد.
+	  
+	  \item 
+	  داده‌های مورد نیاز \lr{Square Matrix Multiplier} را در کلاک‌های مختلف از \lr{Register File} خوانده تا عملیات ضرب ماتریس مربعی 	  $A_{ix}\times B_{xj}$ به درستی انجام شود.
+	  
+	  \item 
+	  بعد از اتمام ضرب حاصل را با مقادیر قبلی که در رجیستر فایل برای $C_{ij}$ بود جمع بزند.
+	  
+	  \item
+	 بعد از اینکه عملیات‌های بالا به اندازه‌ی $\mu$ بار تکرار شد سیگنال مناسبی برای \lr{Main Control Unit} ارسال کند تا در صورت نیاز \lr{Main Control Unit} محاسبه‌ی بلوک دیگری را به این پراسسور اختصاص دهد.
+	   
+	
+\end{enumerate}
+
+یکی دیگر از وظیفه‌های \lr{Processor} این است که در صورتی که \lr{Grant} را در اختیار نداشت به وسیله‌ی یک \lr{Tri-state Buffer} خروجی‌های این مجموعه که به سمت حافظه می‌رود را $z$ کند.
+
+\begin{latin}
+\begin{lstlisting}[language=Verilog]
+assign out_mem_data = (in_grant) ? reg_out_data : 'bz;
+assign out_mem_write_en = (in_grant) ? cu_mem_write : 1'bz;
+assign out_mem_read_en = (in_grant) ? cu_mem_read : 1'bz;
+assign out_mem_address = (in_grant) ? cu_mem_address : 'bz;
+
+\end{lstlisting}
+\end{latin}
+	
+\pagebreak
+
+	\item 
+	\lr{Control Unit}
+	
+	\begin{center}
+		\begin{tikzpicture}[scale=0.2]
+		\tikzstyle{every node}+=[inner sep=0pt]
+		\draw [black] (17.2,-22.1) circle (4.3);
+		\draw (17.2,-22.1) node {IDLE};
+		\draw [black] (24.7,-4.6) circle (4.3);
+		\draw (24.7,-4.6) node {$s_{\text{req}}$};
+		\draw [black] (44.4,-6.3) circle (4.3);
+		\draw (44.4,-6.3) node {$s_{\text{receive}}$};
+		\draw [black] (49,-20.9) circle (4.3);
+		\draw (49,-20.9) node {$s_{\text{wait}}$};
+		\draw [black] (40,-31.8) circle (4.3);
+		\draw (40,-31.8) node {$s_{\text{req}}$};
+		\draw [black] (23,-31.8) circle (4.3);
+		\draw (23,-31.8) node {$s_{\text{write}}$};
+		
+		\draw [black] (14.764,-18.596) arc (-157.36994:-249.02724:10.119);
+		\fill [black] (20.48,-5.25) -- (19.56,-5.07) -- (19.91,-6.01);
+		\draw (14.07,-9.76) node [left] {\small{Indexes Ready}};
+		\draw [black] (28.733,-3.134) arc (103.48076:66.65506:18.979);
+		\fill [black] (40.68,-4.17) -- (40.14,-3.39) -- (39.75,-4.31);
+		\draw (35.3,-1.92) node [above] {\small{Grant Recieved}};
+		
+		\draw [black] (25.506,-8.807) arc (38.58249:-249.41751:3.225);
+		\fill [black] (21.85,-7.8) -- (20.91,-7.91) -- (21.54,-8.69);
+		\draw [black] (42.888,-10.307) arc (7.06044:-280.93956:3.225);
+		
+		\fill [black] (40.3,-7.54) -- (39.44,-7.14) -- (39.57,-8.13);
+		\draw [black] (47.571,-9.168) arc (37.32789:-2.35189:11.683);
+		\fill [black] (49.95,-16.73) -- (50.49,-15.95) -- (49.49,-15.91);
+		\draw (54,-13.73) node [above] {\small{k times}};
+		
+		\draw [black] (48.795,-25.156) arc (-16.13918:-62.95299:9.202);
+		\fill [black] (44.14,-30.79) -- (45.08,-30.88) -- (44.63,-29.98);
+		\draw (47.61,-29.89) node [right] {$x=\mu$};
+		\draw [black] (44.708,-21.016) arc (-93.96494:-153.74105:22.337);
+		\fill [black] (26.22,-8.62) -- (26.13,-9.55) -- (27.02,-9.11);
+		\draw (31.38,-17.78) node [below] {$x \neq \mu$};
+		\draw [black] (36.149,-33.681) arc (-72.11056:-107.88944:15.135);
+		\fill [black] (26.85,-33.68) -- (27.46,-34.4) -- (27.77,-33.45);
+		\draw [black] (19.449,-29.45) arc (-137.35487:-160.8915:8.884);
+		\fill [black] (17.59,-26.34) -- (17.38,-27.26) -- (18.32,-26.93);
+		\draw [black] (21.358,-35.756) arc (5.18593:-282.81407:3.225);
+		\fill [black] (18.86,-32.9) -- (18.02,-32.48) -- (18.11,-33.47);
+		\end{tikzpicture}
+	\end{center}
+	
 	این ماژول وظیفه‌ی محاسبه‌ی حاصل جمع زیر را دارد:
 	$$ C_{ij} = \sum_{x=0}^\mu A_{ix}B_{xj} $$
 	در واقع این ماژول با پیاده کردن دیاگرام حالت زیر اندیس‌ها را تغییر می‌دهد و هر بار $A_{ix},B_{xj}$ جدید را از حافظه‌ می‌خواند و سپس آن را به واحد ضرب کننده‌ی ماتریسی می‌دهد و پس از اینکه جواب نهایی حاضر شد آن را در حافظه می‌نویسد.
@@ -399,17 +615,7 @@ $k=2$
  $2k^2$
  باید صبر کنیم تا تمام بیت‌های مورد نیازمان نوشته شود همچنین این حالت به دو حالت درونی \lr{Receive A} و \lr{Receive B} تقسیم بندی می‌شود.
 	
-	\item 
-	\lr{Main Control Unit}:
-	این واحد وظیفه‌ی پخش کردن بلاک‌های $C_{ij}$ بین پردازنده‌ها را دارد به نمودار حالت زیر توجه می‌کنیم:
-	
-	\begin{figure}[h]
-		\centering
-		\includegraphics[width=0.4\linewidth]{source/main_cu_fsm.png}
-		\caption{\lr{Main CU Fsm}}
-	\end{figure}
-	
-	همان طور که از این نمودار حالت مشخص است هرگاه کلمه‌ی \lr{status} در حافظه نشان‌ دهنده \lr{Cpu\_Ready} باشد از حالت اولیه‌ خارج می‌شویم و از \lr{Arbiter} درخواست می‌کنیم که حافظه‌ را در اختیار ما بگذارد، سپس با داشتن کانفیگ می‌توانیم بین \lr{Processor}‌‌های مختلف اندیس‌ها را پخش کنیم. این کار به اندازه‌ی $\theta$بار انجام می‌دهیم تا نهایتا همه‌ی $C_{ij}$‌ها توسط پردازنده‌ها محاسبه شده و در مموری ذخیره شود. سپس با درخواست از \lr{Arbiter} دسترسی به حافظه را بدست می‌آوریم و کلمه‌ی \lr{status} را تغییر می‌دهیم تا \lr{CPU} متوجه به پایان رسیدن عملیات شود.
+
 	
 	\item 
 	\lr{Processor Unit}:
@@ -429,13 +635,7 @@ $k=2$
 \end{itemize}
 
 \pagebreak
-\subsection{ساختار درختی سیستم}
 
-	\begin{figure}[h]
-	\centering
-	\includegraphics[width=0.87\linewidth]{source/tree.png}
-	\caption{\lr{Design Hierarchy}}
-\end{figure}
 
 \pagebreak
 \section{روند شبیه‌سازی و نتایج حاصل}
