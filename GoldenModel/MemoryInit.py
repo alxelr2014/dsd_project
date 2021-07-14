@@ -6,11 +6,11 @@ from FpArithmetic import FpArithmetic
 import linecache
 
 ABSOLUTE_PATH = "C:/Users/emadz/Desktop/School/Books/Semester IV/Digital System Design/Project/"
-RELATIVE_PATH = "5Processors/" # "GoldenModel/" #
+RELATIVE_PATH = "Test/" # "GoldenModel/" #
 def memory_init():
-    a_row = 5
-    b_row = 4
-    b_col = 7
+    a_row = 3
+    b_row = 1
+    b_col = 2
     num_processor = 5
     sub_matrix = 4
     con_lambda = math.ceil(a_row / sub_matrix)
@@ -18,16 +18,14 @@ def memory_init():
     con_mu = math.ceil(b_row / sub_matrix)
     con_theta = math.ceil((con_lambda * con_gamma) / num_processor)
 
-    fp = FpArithmetic(
-        executable_path= ABSOLUTE_PATH +  "GoldenModel/chromedriver.exe")
-    lo, hi = int("0x38D1B717", 16), int("0x42C80000", 16)
+    fp = FpArithmetic(ABSOLUTE_PATH + "GoldenModel/chromedriver.exe")
+    lo, hi = int("0x3A83126F", 16), int("0x42C80000", 16)
     cannon = CannonBotUp(a_row, b_row, b_col,
                          num_processor, sub_matrix, lo, hi, fp)
     config = format(con_theta, '02x') + format(con_mu, '02x') + \
         format(con_gamma, '02x') + format(con_lambda, '02x')
-    print(config)
     status = "80000000"
-    print(cannon.test())
+    cannon.test()
 
     f = open(
         ABSOLUTE_PATH + RELATIVE_PATH + "memory_tb_init.txt",
@@ -87,7 +85,6 @@ def memory_init():
         f.write('\n\n')
     f.write('\n\n')
     f.close()
-    fp.close()
 
     print("Done")
 
@@ -106,7 +103,6 @@ def memory_check():
         if line_result != line_check:
             print("DIFFERENT")
 
-    print("SAME")
 
 def register_init():
     size = 6
@@ -124,7 +120,6 @@ def register_init():
     f.close()
     print("Done")
 
-
 def block_mult():
     size = 3
     matrix_a = np.zeros((size, size))
@@ -137,8 +132,7 @@ def block_mult():
         raw_input = input().split(" ")
         matrix_b[_i][:] = [int(_s, 16) for _s in raw_input]
 
-    fp = FpArithmetic(
-        executable_path=ABSOLUTE_PATH  + "GoldenModel/chromedriver.exe")
+    fp = FpArithmetic(ABSOLUTE_PATH + "GoldenModel/chromedriver.exe")
     processor = ProcessingUnit(size, fp)
     matrix_c = processor.matrix_mult(matrix_a, matrix_b)
 
@@ -160,8 +154,7 @@ def block_add():
         raw_input = input().split(" ")
         matrix_b[_i][:] = [int(_s, 16) for _s in raw_input]
 
-    fp = FpArithmetic(
-        executable_path=ABSOLUTE_PATH + "GoldenModel/chromedriver.exe")
+    fp = FpArithmetic(ABSOLUTE_PATH + "GoldenModel/chromedriver.exe")
     processor = ProcessingUnit(size, fp)
     matrix_c = processor.matrix_add(matrix_a, matrix_b)
 
@@ -169,6 +162,8 @@ def block_add():
         for _j in range(size):
             print(format(int(matrix_c[_i][_j]), '08x'), end=" ")
         print()
+
+
 
 
 int_input = int(input())

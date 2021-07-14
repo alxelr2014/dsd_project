@@ -1,5 +1,6 @@
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
+from ieee754_converter import IEEE754
 
 
 class FpArithmetic:
@@ -27,16 +28,17 @@ class FpArithmetic:
         self.__input2.send_keys(hex(b))
         self.__times.send_keys(Keys.ENTER)
         output = self.__hexOut3.text[2:len(self.__hexOut3.text)]
+        print(hex(a), " * ", hex(b), " =  ", output)
         return self.hex_to_int(output)
 
     def sum_fp(self, a, b):
-
         self.clear_text(self.__input1)
         self.__input1.send_keys(hex(a))
         self.clear_text(self.__input2)
         self.__input2.send_keys(hex(b))
         self.__plus.send_keys(Keys.ENTER)
         output = self.__hexOut3.text[2:len(self.__hexOut3.text)]
+        print(hex(a) , " + " , hex(b) ," =  " ,output)
         return self.hex_to_int(output)
 
     def fp_to_hex(self, a):

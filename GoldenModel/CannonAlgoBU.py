@@ -90,14 +90,15 @@ def submatrix(matrix_a, ranges):
 
 
 class CannonBotUp:
-    def __init__(self, m, r, n, p, k , lo ,hi , fp):
+    def __init__(self, m, r, n, p, k , lo , hi, fp):
         self.m = m  # num rows of A
         self.n = n  # num cols of B
         self.r = r  # num cols of A = num rows of B
         self.p = p  # num processors
         self.k = k  # square sub matrix size
-        self.matrix_a = np.random.randint(lo, hi, (m, r))
-        self.matrix_b = np.random.randint(lo, hi, (r, n))
+        self.fp = fp
+        self.matrix_a = np.random.randint(lo, hi,(m, r))
+        self.matrix_b =  np.random.randint(lo, hi,(r,n))
         self.matrix_c = np.zeros((m, n))
         self.processors = [ProcessingUnit(k, fp) for _j in range(p)]
         self.matrix_a = self.processors[0].append(self.matrix_a)
@@ -107,40 +108,15 @@ class CannonBotUp:
         self.n +=(self.k - (self.n % self.k ) ) %self.k
         self.r += (self.k - (self.r % self.k ) ) %self.k
 
-    def index(self, i, j, row, col):
-        row_range = i * self.k, min((i + 1) * self.k, row)
-        col_range = j * self.k, min((j + 1) * self.k, col)
-        return row_range, col_range
-
-    def range_addition(self,c_range, _p, a_sub , b_sub):
-        res_matrix = self.processors[_p].mult(a_sub, b_sub)
-        for _i in range (c_range[0][1] - c_range[0][0]):
-            for _j in range(c_range[1][1] - c_range[1][0]):
-                self.matrix_c[_i + c_range[0][0]][_j + c_range[1][0]] = \
-                    self.processors[_p].fp.sum_fp(int(self.matrix_c[_i + c_range[0][0]][_j + c_range[1][0]]),  int(res_matrix[_i][_j]))
-
-    def main_algo(self):
-        for _p in range(self.p):
-            for _i in range(math.ceil(self.m / self.k)):
-                for _j in range(math.ceil(self.n / self.k)):
-                    if (_i + _j) % self.p == _p:
-                        for _k in range(math.ceil(self.r / self.k)):
-                            a_range = self.index(_i, _k, self.m, self.r)
-                            b_range = self.index(_k, _j, self.r, self.n)
-                            c_range = self.index(_i, _j, self.m, self.n)
-                            a_sub = submatrix(self.matrix_a, a_range)
-                            b_sub = submatrix(self.matrix_b, b_range)
-                            self.range_addition(c_range,_p,a_sub,b_sub)
-
-    def partition (self, iden):
-        if iden == 0 : # matrix a
+    def partition(self, iden):
+        if iden == 0:  # matrix a
             result = []
             for _i in range(math.ceil(self.m / self.k)):
                 for _k in range(math.ceil(self.r / self.k)):
                     a_range = self.index(_i, _k, self.m, self.r)
                     result.append(submatrix(self.matrix_a, a_range))
             return result
-        if iden == 1:  #matrix b
+        if iden == 1:  # matrix b
             result = []
             for _i in range(math.ceil(self.r / self.k)):
                 for _k in range(math.ceil(self.n / self.k)):
@@ -157,56 +133,86 @@ class CannonBotUp:
 
     def test(self):
         # self.main_algo()
-        matrix_d = self.processors[0].matrix_mult(self.matrix_a, self.matrix_b)
+        # matrix_d = self.processors[0].matrix_mult(self.matrix_a, self.matrix_b)
+        self.matrix_c = self.processors[0].matrix_mult(self.matrix_a , self.matrix_b)
         print("m = ", self.m, " r = ", self.r, " n = ",
               self.n, " p = ", self.p, " k = ", self.k)
 
-        print(self.matrix_a)
 
-        print("A:" )
+
+        print("A:")
         for _i in range(self.m):
             for _j in range(self.r):
-                print( hex(int(self.matrix_a[_i][_j])), end = " " )
+                print(hex(int(( self.matrix_a[_i][_j]) )), end=" ")
             print()
 
-        print("B:" )
+        print("B:")
         for _i in range(self.r):
             for _j in range(self.n):
-                print(hex(int(self.matrix_b[_i][_j])), end =" ")
+                print(hex(int(( self.matrix_b[_i][_j]) )), end=" ")
             print()
 
-        print("C:" )
+        print("C:")
         for _i in range(self.m):
             for _j in range(self.n):
-                print(hex(int(self.matrix_c[_i][_j])), end =" ")
+                print(hex(int(( self.matrix_c[_i][_j]) )), end=" ")
             print()
 
-        print("D:" )
-        for _i in range(self.m):
-            for _j in range(self.n):
-                print(hex(int(matrix_d[_i][_j])), end = " ")
-            print()
-        self.matrix_c = matrix_d
-        return verify(self.matrix_c, matrix_d)
+        # print("D:")
+        # for _i in range(self.m):
+        #     for _j in range(self.n):
+        #         print(hex(int(matrix_d[_i][_j])), end=" ")
+        #     print()
+        # self.matrix_c = matrix_d
+        # return verify(self.matrix_c, matrix_d)
 
-"""
-fp1 = FpArithmetic(executable_path="C:/Users/emadz/Desktop/School/Books/Semester IV/Digital System Design/Project/GoldenModel/chromedriver.exe")
-lo, hi = 1,6
-fp_lo, fp_hi = int("0x38D1B717", 16), int("0x43FA0000", 16)
-p_hi, k_hi = 1, 1
-num_test = 1
-flag = True
-for i in range(num_test):
+    def index(self, i, j, row, col):
+        row_range = i * self.k, min((i + 1) * self.k, row)
+        col_range = j * self.k, min((j + 1) * self.k, col)
+        return row_range, col_range
 
-    num_rows_A = random.randint(lo, hi)
-    num_cols_A = random.randint(lo, hi)
-    num_cols_B = random.randint(lo, hi)
-    num_processors = random.randint(lo, p_hi)
-    size_submatrix = random.randint(lo, k_hi)
 
-    flag = flag and CannonBotUp(num_rows_A, num_cols_A, num_cols_B,
-                                num_processors, size_submatrix,fp_lo , fp_hi, fp1).test()
+    #
+    # def range_addition(self,c_range, _p, a_sub , b_sub):
+    #     res_matrix = self.processors[_p].mult(a_sub, b_sub)
+    #     for _i in range (c_range[0][1] - c_range[0][0]):
+    #         for _j in range(c_range[1][1] - c_range[1][0]):
+    #             self.matrix_c[_i + c_range[0][0]][_j + c_range[1][0]] = \
+    #                 self.processors[_p].fp.sum_fp(int(self.matrix_c[_i + c_range[0][0]][_j + c_range[1][0]]),  int(res_matrix[_i][_j]))
+    #
+    # def main_algo(self):
+    #     for _p in range(self.p):
+    #         for _i in range(math.ceil(self.m / self.k)):
+    #             for _j in range(math.ceil(self.n / self.k)):
+    #                 if (_i + _j) % self.p == _p:
+    #                     for _k in range(math.ceil(self.r / self.k)):
+    #                         a_range = self.index(_i, _k, self.m, self.r)
+    #                         b_range = self.index(_k, _j, self.r, self.n)
+    #                         c_range = self.index(_i, _j, self.m, self.n)
+    #                         a_sub = submatrix(self.matrix_a, a_range)
+    #                         b_sub = submatrix(self.matrix_b, b_range)
+    #                         self.range_addition(c_range,_p,a_sub,b_sub)
 
-print(flag)
-fp1.close()
-# ProcessingUnit(5).test()"""
+
+
+
+# fp1 = FpArithmetic(executable_path="C:/Users/emadz/Desktop/School/Books/Semester IV/Digital System Design/Project/GoldenModel/chromedriver.exe")
+# lo, hi = 1,6
+# fp_lo, fp_hi = int("0x38D1B717", 16), int("0x43FA0000", 16)
+# p_hi, k_hi = 1, 1
+# num_test = 1
+# flag = True
+# for i in range(num_test):
+#
+#     num_rows_A = random.randint(lo, hi)
+#     num_cols_A = random.randint(lo, hi)
+#     num_cols_B = random.randint(lo, hi)
+#     num_processors = random.randint(lo, p_hi)
+#     size_submatrix = random.randint(lo, k_hi)
+#
+#     flag = flag and CannonBotUp(num_rows_A, num_cols_A, num_cols_B,
+#                                 num_processors, size_submatrix,fp_lo , fp_hi, fp1).test()
+#
+# print(flag)
+# fp1.close()
+# # ProcessingUnit(5).test()
