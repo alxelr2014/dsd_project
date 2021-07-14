@@ -1,6 +1,7 @@
 \documentclass[12pt,onecolumn,a4paper,fleqn]{article}
 \usepackage{epsfig,graphicx,subfigure,amsthm,amsmath}
 \usepackage[table,xcdraw,svgnames]{xcolor}
+\usepackage{setspace}
 \usepackage{mathtools}
 \usepackage{fancyhdr}
 \usepackage{sidecap}
@@ -36,7 +37,7 @@
 	numbers=left,
 	numberstyle=\tiny\color{black},
 	numbersep=10pt,
-	tabsize=8,
+	tabsize=2,
 	frame=single,
 	literate=*{:}{{\textcolor{black}{:}}}1
 }
@@ -56,7 +57,7 @@
 \renewcommand{\sectionmark}[1]{\markright{#1}}
 \renewcommand{\subsectionmark}[1]{\markright{#1}}
 
-
+\onehalfspacing
 \begin{document}
 %%% title pages
 \large
@@ -70,7 +71,7 @@
 		\end{Large}
 		
 		\vspace{2cm}
-		\includegraphics[scale=0.6]{files/sharif-logo.png}\\
+		\includegraphics[scale=0.8]{source/sharif1.png}\\
 		\vspace{0.5cm}
 		\begin{Large}
 			\textbf{
@@ -154,6 +155,8 @@
 
 در ادامه‌ی این گزارش از علائم ریاضی‌ای استفاده می‌شود که در اینجا به شرح‌ آنها می‌پردازیم.
 	
+\pagebreak
+
 \subsection{قرارداد‌های ریاضی}
 
 ورودی الگوریتم مورد استفاده  ماتریس‌های مستطیلی $A_{mr}$ و $B_{rn}$ خواهند بود و بنابراین ماتریس‌ خروجی به صورت
@@ -207,8 +210,6 @@ $A_{mr} \times B_{rn} = C_{mn}$
 
 همچنین تعداد رجیستر‌هایی که هر واحد ضرب‌کننده‌ی ماتریس مربعی نیاز دارد از $O(k^2)$ می‌باشد. و بنابراین تعداد تمام رجیستر‌هایی که مورد نیاز است از $O(pk^2)$ می‌باشد.
 
-	\pagebreak
-
 \subsection{استاندارد‌ \lr{IEEE 754}}
 محاسبات در این پروژه از استاندارد
  \lr{IEEE 754 - Single-precision floating-point}
@@ -225,10 +226,12 @@ $A_{mr} \times B_{rn} = C_{mn}$
 \begin{equation}
 \text{value} = (-1)^{sign} \times 2^{(E-127)} \times (1 + \sum_{i=1}^{23}b_{23-i}2^{-i})
 \end{equation}
-
+\pagebreak
 \subsection{کاربرد‌ها}
  
- \pagebreak
+ محاسبات ماتریسی، در سیستمهای پردازش تصویر، در سیستمهای مخابراتی MIMO ،در سیستم های مخابراتی که از روش OFDM برای ارسال اطالاعات استفاده می کنند و همچنین در سیستم های رادار و سونار که مراحل آشکارسازی و تخمین را به کمک اطاعاتی که از آرایه ای از سنسورها جمع آوری شده انجام می دهند، کاربرد فراوانی دارند. 
+ واحد ضرب ماتریس در برنامه های پردازش سیگنال دیجیتال مانند تصویربرداری دیجیتال، پردازش سیگنال، گرافیک رایانه ای و چندرسانه ای استفاده می شود. بنابراین بسیار مهم است که مساحت کمتری اشغال کند، سریع کار کند و انرژی کمی مصرف کند. 
+ در این پروژه، به چگونگی محاسبه ی ضرب ماتریس ها و پیاده سازی آن، به عنوان یک بخش از مباحث محاسبات ماتریسی پرداخته شده است.
 
 \subsection{مراجع مورد استفاده}
 
@@ -259,7 +262,7 @@ $A_{mr} \times B_{rn} = C_{mn}$
 \\ برای استفاده از این  کمک-پردازنده قرارداد‌هایی در نحوه‌ی استفاده از مموری وجود دارد که باید به آن توجه شود.
 
 \subsubsection{ساختار کلی حافظه} ساختار کلی حافظه به صورت زیر خواهد بود:
-\vspace{2cm}
+\vspace{1cm}
 \begin{table}[h]
 	\centering
 	\begin{tabular}{clll}
@@ -287,7 +290,7 @@ $A_{mr} \times B_{rn} = C_{mn}$
 	\end{tabular}
 	\caption{شماتیک حافظه}
 \end{table}
-\vspace{1.5cm}
+\vspace{1cm}
 
 که در آن هر یک از $A_{ij} , B_{ij} , C_{ij}$ها یک بلوک $k*k$ خواهند بود و باید آن‌ها را به صورت سطری در خانه‌های پشت سر هم حافظه نوشت. 
 
@@ -475,7 +478,7 @@ $\ceil{\frac{N-2}{3}}$
 	
 	\begin{figure}[h]
 		\centering
-		\includegraphics[width=0.5\linewidth]{source/arbiter1.png}
+		\includegraphics[width=0.4\linewidth]{source/arbiter1.png}
 		\caption{\lr{Arbiter Schematic}}
 	\end{figure}
 	
@@ -493,24 +496,42 @@ $\ceil{\frac{N-2}{3}}$
 
 	\item 
 \lr{Main Control Unit}
-این واحد وظیفه‌ی پخش کردن بلاک‌های $C_{ij}$ بین پردازنده‌ها را دارد به نمودار حالت زیر توجه می‌کنیم:
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[width=0.4\linewidth]{source/main_cu_fsm.png}
+	\includegraphics[width=0.6\linewidth]{source/main_cu.png}
+	\caption{\lr{Main CU Schematic}}
+\end{figure}
+
+این واحد وظیفه‌ی پخش کردن بلاک‌های $C_{ij}$ بین پردازنده‌ها را دارد به نمودار حالت زیر توجه می‌کنیم:
+\vspace{0.3cm}
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.92\linewidth]{source/main_cu_fsm.jpg}
 	\caption{\lr{Main CU Fsm}}
 \end{figure}
 
-همان طور که از این نمودار حالت مشخص است هرگاه کلمه‌ی \lr{status} در حافظه نشان‌ دهنده \lr{Cpu\_Ready} باشد از حالت اولیه‌ خارج می‌شویم و از \lr{Arbiter} درخواست می‌کنیم که حافظه‌ را در اختیار ما بگذارد، سپس با داشتن کانفیگ می‌توانیم بین \lr{Processor}‌‌های مختلف اندیس‌ها را پخش کنیم. این کار به اندازه‌ی $\theta$بار انجام می‌دهیم تا نهایتا همه‌ی $C_{ij}$‌ها توسط پردازنده‌ها محاسبه شده و در مموری ذخیره شود. سپس با درخواست از \lr{Arbiter} دسترسی به حافظه را بدست می‌آوریم و کلمه‌ی \lr{status} را تغییر می‌دهیم تا \lr{CPU} متوجه به پایان رسیدن عملیات شود.
+\pagebreak
+
+با یک شدن بیت آخر خانه‌ی status در حافظه، این واحد کار خود را آغاز کرده و به پردازنده مرکزی acknowledge می‌دهد که کار خود را آغاز کرده است. 
+
+در حالت بعدی به سراغ خواندن اطلاعات ماتریس‌های ضرب شونده از خانه config در حافظه رفته و این اطلاعات را در رجیستر‌های میانی خود ذخیره می‌کند. پس از آن شروع به پخش کردن بلوک‌های ماتریس‌ها میان پردازنده‌ها کرده که این کار نیز به این صورت انجام می‌شود که منتظر سیگنال acknowledge از طرف پردازنده مورد نظر می‌ماند و اگر این سیگنال را دریافت کند به سراغ پردازنده بعدی می‌رود. این کار را تا زمانی ادامه می‌دهد که به تمامی پردازنده‌ها یک بلوک اختصاص یابد. 
+
+پس از اختصاص بلوک‌ها به تمامی پردازنده ها به حالت بعدی رفته و منتظر می‌ماند تا پردازنده‌ها کار خود را تمام کنند. با تمام شدن کار تمامی پردازنده‌ها، سیگنال result\_ready یک شده و در این حالت اگر بلوکی برای اختصاص دادن باقی‌مانده بود، دوباره به حالت s\_Scatter برگشته و تخصیص را انجام می‌دهد و در غیر اینصورت به حالت بعدی، یعنی s\_Change\_Status رفته و مطابق قرارداد، بیت اول خانه‌ی status حافظه را یک می‌کند که نشان می‌دهد کار ضرب‌ماتریس‌ها تمام شده و نتیجه نیز در حافظه نوشته شده است و پردازنده‌ی مرکزی می‌تواند خروجی را استخراج کند.
 
 \pagebreak
 
 \item 
 \lr{Processor}
 
-این واحد وظیفه‌ دارد که با دریافت یک $i,j$ و سیگنال‌های ورودی دیگر مقدار $C_{ij}$ را محاسبه کرده و در حافظه ذخیره کند. شماتیک این ماژول به صورت زیر می‌باشد. 
+	\begin{figure}[h]
+		\centering
+		\includegraphics[width=0.55\linewidth]{source/processor.png}
+		\caption{\lr{Processor Fsm}}
+	\end{figure}
 
-شماتییییک
+این واحد وظیفه‌ دارد که با دریافت یک $i,j$ و سیگنال‌های ورودی دیگر مقدار $C_{ij}$ را محاسبه کرده و در حافظه ذخیره کند.
 
 در واقع این واحد که متشکل از \lr{Register File} ،
 \lr{Control Unit},
@@ -538,101 +559,143 @@ $\ceil{\frac{N-2}{3}}$
 	   
 	
 \end{enumerate}
-
-یکی دیگر از وظیفه‌های \lr{Processor} این است که در صورتی که \lr{Grant} را در اختیار نداشت به وسیله‌ی یک \lr{Tri-state Buffer} خروجی‌های این مجموعه که به سمت حافظه می‌رود را $z$ کند.
-
-\begin{latin}
-\begin{lstlisting}[language=Verilog]
-assign out_mem_data = (in_grant) ? reg_out_data : 'bz;
-assign out_mem_write_en = (in_grant) ? cu_mem_write : 1'bz;
-assign out_mem_read_en = (in_grant) ? cu_mem_read : 1'bz;
-assign out_mem_address = (in_grant) ? cu_mem_address : 'bz;
-
-\end{lstlisting}
-\end{latin}
 	
 \pagebreak
 
 	\item 
 	\lr{Control Unit}
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.6\linewidth]{source/control_unit.png}
+	\caption{\lr{CU Fsm}}
+\end{figure}
 	
-	\begin{center}
-		\begin{tikzpicture}[scale=0.2]
-		\tikzstyle{every node}+=[inner sep=0pt]
-		\draw [black] (17.2,-22.1) circle (4.3);
-		\draw (17.2,-22.1) node {IDLE};
-		\draw [black] (24.7,-4.6) circle (4.3);
-		\draw (24.7,-4.6) node {$s_{\text{req}}$};
-		\draw [black] (44.4,-6.3) circle (4.3);
-		\draw (44.4,-6.3) node {$s_{\text{receive}}$};
-		\draw [black] (49,-20.9) circle (4.3);
-		\draw (49,-20.9) node {$s_{\text{wait}}$};
-		\draw [black] (40,-31.8) circle (4.3);
-		\draw (40,-31.8) node {$s_{\text{req}}$};
-		\draw [black] (23,-31.8) circle (4.3);
-		\draw (23,-31.8) node {$s_{\text{write}}$};
-		
-		\draw [black] (14.764,-18.596) arc (-157.36994:-249.02724:10.119);
-		\fill [black] (20.48,-5.25) -- (19.56,-5.07) -- (19.91,-6.01);
-		\draw (14.07,-9.76) node [left] {\small{Indexes Ready}};
-		\draw [black] (28.733,-3.134) arc (103.48076:66.65506:18.979);
-		\fill [black] (40.68,-4.17) -- (40.14,-3.39) -- (39.75,-4.31);
-		\draw (35.3,-1.92) node [above] {\small{Grant Recieved}};
-		
-		\draw [black] (25.506,-8.807) arc (38.58249:-249.41751:3.225);
-		\fill [black] (21.85,-7.8) -- (20.91,-7.91) -- (21.54,-8.69);
-		\draw [black] (42.888,-10.307) arc (7.06044:-280.93956:3.225);
-		
-		\fill [black] (40.3,-7.54) -- (39.44,-7.14) -- (39.57,-8.13);
-		\draw [black] (47.571,-9.168) arc (37.32789:-2.35189:11.683);
-		\fill [black] (49.95,-16.73) -- (50.49,-15.95) -- (49.49,-15.91);
-		\draw (54,-13.73) node [above] {\small{k times}};
-		
-		\draw [black] (48.795,-25.156) arc (-16.13918:-62.95299:9.202);
-		\fill [black] (44.14,-30.79) -- (45.08,-30.88) -- (44.63,-29.98);
-		\draw (47.61,-29.89) node [right] {$x=\mu$};
-		\draw [black] (44.708,-21.016) arc (-93.96494:-153.74105:22.337);
-		\fill [black] (26.22,-8.62) -- (26.13,-9.55) -- (27.02,-9.11);
-		\draw (31.38,-17.78) node [below] {$x \neq \mu$};
-		\draw [black] (36.149,-33.681) arc (-72.11056:-107.88944:15.135);
-		\fill [black] (26.85,-33.68) -- (27.46,-34.4) -- (27.77,-33.45);
-		\draw [black] (19.449,-29.45) arc (-137.35487:-160.8915:8.884);
-		\fill [black] (17.59,-26.34) -- (17.38,-27.26) -- (18.32,-26.93);
-		\draw [black] (21.358,-35.756) arc (5.18593:-282.81407:3.225);
-		\fill [black] (18.86,-32.9) -- (18.02,-32.48) -- (18.11,-33.47);
-		\end{tikzpicture}
-	\end{center}
-	
-	این ماژول وظیفه‌ی محاسبه‌ی حاصل جمع زیر را دارد:
-	$$ C_{ij} = \sum_{x=0}^\mu A_{ix}B_{xj} $$
-	در واقع این ماژول با پیاده کردن دیاگرام حالت زیر اندیس‌ها را تغییر می‌دهد و هر بار $A_{ix},B_{xj}$ جدید را از حافظه‌ می‌خواند و سپس آن را به واحد ضرب کننده‌ی ماتریسی می‌دهد و پس از اینکه جواب نهایی حاضر شد آن را در حافظه می‌نویسد.
+	این ماژول وظیفه‌ی کنترل سیگنال‌ها هنگام محاسبه‌ی \autoref{1} را دارد.
+	در واقع این ماژول با پیاده کردن دیاگرام حالت زیر مقدار $x$ را تغییر می‌دهد و هر بار $A_{ix},B_{xj}$ جدید را از حافظه‌ می‌خواند و سپس آن را به واحد ضرب کننده‌ی ماتریسی می‌دهد و پس از اینکه جواب نهایی حاضر شد آن را در حافظه می‌نویسد.
 	\begin{figure}[h]
 		\centering
-		\includegraphics[width=0.4\linewidth]{source/fsm_cu.jpg}
+		\includegraphics[width=0.53\linewidth]{source/fsm_cu.jpg}
 		\caption{\lr{CU Fsm}}
 	\end{figure}
-توجه می‌کنیم که در حالت \lr{Receive} به اندازه‌ی
- $2k^2$
- باید صبر کنیم تا تمام بیت‌های مورد نیازمان نوشته شود همچنین این حالت به دو حالت درونی \lr{Receive A} و \lr{Receive B} تقسیم بندی می‌شود.
-	
-
+\\
+همانطور که مشخص است این واحد بعد از دریافت اندیس‌های اصلی $i,j$ از \lr{Arbiter} اجازه‌ی نوشتن در \lr{Address Bus} را می‌خواهد و بعد از دریافت کردن آن به اندازه‌ای در حالت \lr{Receive} می‌ماند تا $A_{ix}$ و $B_{xj}$ به طور کامل در رجیستر فایل نوشته شوند و این کار را به انداز‌ه‌ی $\mu$ بار تکرار می‌کند تا نهایتا $C_{ij}$ محاسبه شود.
 	
 	\item 
-	\lr{Processor Unit}:
-	این واحد متشکل از \lr{Control Unit} و \lr{Matrix Multiplier} و \lr{Register File} می‌باشد و وظیفه‌ی برقراری ارتباط بین آنها را دارد. به طور خلاصه این واحد دستورات کنترل یونیت را به مموری می‌فرستد و داده‌ها را درون رجیسترفایل می‌ریزد و یا از آن می‌خواند و \lr{Matrix Multiplier} با استفاده از داده‌های موجود در رجیستر فایل ضرب ماتریسی را انجام می‌دهد و نهایتا خروجی را درون رجیستر فایل می‌ریزد. سپس با استفاده از دستورات واحد کنترلی مقادیر موجود در رجیستر فایل به حافظه انتقال پیدا می‌کند.
-	\item 
-	\lr{Matrix Multiplier}:
-	این واحد وظیفه‌ی ضرب ماتریسی دو ماتریس $k*k$ را دارد به نمودار حالت زیر توجه کنید:
+	\lr{Matrix Multiplier}
+	
 	\begin{figure}[h]
 		\centering
-		\includegraphics[width=0.5\linewidth]{source/square_matrix.png}
-		\caption{\lr{Multiplier Fsm}}
+		\includegraphics[width=0.7\linewidth]{source/squareMatrixMult.png}
+		\caption{\lr{Square Matrix Multiplier Schematic}}
 	\end{figure}
-	در حالت اول با دریافت بیت \lr{in\_Ready} که از طرف واحد کنترلی می‌آید مشخص می‌شود که باید مراحل ضرب کردن را آغاز کند و این ماژول با استفاده از رجیستر‌های میانی زمان پایان عملیات ضرب را متوجه می‌شود.
-	\item 
-	\lr{Index To Address Transformer}
-	این واحد با داشتن کانفیگ و همچنین ورودی‌های مشخص کننده‌ی دیگر باید بتوانند آدرس $A_{ix}$ یا $B_{xj}$ و یا $C_{ij}$ را پیدا کند بیت‌های ورودی این واحد شامل اندیس سطر و ستون و ۳ بیت دیگر که مشخص می‌کند باید آدرس کدام یک از $A,B,C$ را پیدا کند.
+
+	
+	این واحد دو ماتریس $k*k$ را با توجه به نمودار حالت زیر ابتدا از رجیستر فایل می‌خواند و سپس در هم ضرب می‌کند:
+	\begin{figure}[h]
+		\centering
+		\includegraphics[width=0.6\linewidth]{source/fsm_sq_mat.jpg}
+		\caption{\lr{Square Matrix Multiplier Fsm}}
+	\end{figure}
+	\\ در حالت اول با دریافت بیت \lr{in\_Ready} که از طرف واحد کنترلی فرعی می‌آید مشخص می‌شود که باید مراحل ضرب کردن را آغاز کند. با آمدن این بیت در دو حالت \lr{Take A} و\lr{Take B} می‌ماند تا یک سطر و یک ستون را در یافت کند سپس در مرحله‌ی \lr{Operation} این سطر و ستون را به واحد‌های کوچک‌تری که مربوط به ضرب سطر و ستون می‌باشند میدهد و این کار را تا زمانی که تمام درایه‌ها را محاسبه کند ادامه می‌دهد. و نهایتا خروجی را در مرحله‌ی \lr{Done} درون رجستر فایل می‌ریزد.
+
+
+\pagebreak
+
+
+\item 
+\lr{Index To Address Transformer}
+
+	\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.8\linewidth]{source/index_to_address.png}
+	\caption{\lr{Index To Address Transformer Schematic}}
+	\end{figure}
+
+
+	این واحد با داشتن کانفیگ و همچنین ورودی‌های مشخص کننده‌ی دیگر باید بتوانند آدرس $A_{ix}$ یا $B_{xj}$ و یا $C_{ij}$ را پیدا کند بیت‌های ورودی این واحد شامل اندیس سطر و ستون و ۳ بیت دیگر که مشخص می‌کند باید آدرس کدام یک از $A,B,C$ را پیدا کند. 
+	
+	روشن است که عملکرد این واحد به قرار داد اولیه‌ای که برای حافظه و کانفیگ گذاشتیم به شدت وابسته خواهد شد و می‌توان آن را تنها با توجه به حالت‌های مختلف برای \lr{i\_Type} محاسبه کرد.
+	
+	\pagebreak
+	
+	\item \lr{Column Processor}
+	
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.7\linewidth]{source/columnProcessor.png}
+	\caption{\lr{Column Processor Schematic}}
+\end{figure}
+	
+	این واحد به منظور محاسبه‌ی ضرب یک سطر از ماتریس $A_{ix}$ در یک ستون از ماتریس $B_{xj}$ طراحی شده است. 
+
+
+	\begin{figure}[h]
+		\centering
+		\includegraphics[width=0.6\linewidth]{source/column_procsessor.png}
+		\caption{\lr{Column Processor Fsm}}
+	\end{figure}
+
+هر موقع واحد \lr{Square Matrix Multiplier} داده‌های این واحد را فراهم کند بیت \lr{in\_Ready} را برایش فعال می‌کند سپس این واحد نیز داده‌ها را ابتدا در اختیار واحد ضرب کننده‌ی سطری می‌دهد و بعد از آماده شدن پاسخ آن داده‌ها را در اختیار واحد جمع کننده قرار می‌دهد و در نهایت این داده‌ها را در محل مناسبی در \lr{Register File} می‌ریزد.
+
+\pagebreak
+
+\item \lr{Column Multiplier}
+
+	\begin{figure}[h]
+	\centering
+	\includegraphics[trim={0 2cm 0 0}, clip, width=0.7 \linewidth]{source/columnMult.png}
+	\caption{\lr{Column Multiplier Schematic}}
+	
+\end{figure}
+
+وظیفه‌ی این واحد جمع کرد این است که حاصل ضرب نقطه‌ای یک سطر از $A_{ix}$ و یک ستون از $B_{xj}$ را محاسبه کرده و این مقدار را نگه داشته تا \lr{column\_processors} بتواند از آن استفاده کند. 
+
+	\begin{figure}[h]
+	\centering
+	\includegraphics[trim={0 2cm 0 0}, clip, width=0.7 \linewidth]{source/column_mult.png}
+	\caption{\lr{Column Multiplier Fsm}}
+
+\end{figure}
+
+همانطور که از نمودار حالت مشخص است این واحد تا زمانی که \lr{r\_Counter} از $k$ کوچک‌تر باشد ضرب کردن را تکرار می‌کند و بعد از آن به حالت \lr{s\_Done} می‌رود.
+	
+\pagebreak
+
+\item \lr{Column Adder}
+
+	\begin{figure}[h]
+	\centering
+	\includegraphics[trim={0 2cm 0 0}, clip, width=0.7 \linewidth]{source/columnAdder.png}
+	\caption{\lr{Column Adder Schematic}}
+	
+\end{figure}
+
+این واحد وظیفه‌ی جمع کردن یک ستون در ورودی را دارد.
+
+	\begin{figure}[h]
+	\centering
+	\includegraphics[trim={0 2cm 0 0}, clip, width=0.7 \linewidth]{source/column_adder.png}
+	\caption{\lr{Column Adder Fsm}}
+	
+\end{figure}
+
+همانطور که می‌توان از این نمودار حالت دید نحوه‌ی عملکرد این واحد به گونه‌ایست که با دریافت سیگنال \lr{in\_ready} در حالت جمع کردن بلاک‌ها قرار می‌گیرد و این کار را تا زمانی که \lr{r\_counter} از $k$کمتر باشد ادامه می‌دهد.
+	
 \end{itemize}
+
+\pagebreak
+
+\subsection{شماتیک کلی سخت‌افزار}
+
+در این بخش بعد از سنتز به وسیله‌ی \lr{XilinX}  شماتیک کلی سخت ‌‌افزار را استخراج کردیم که به صورت زیر می‌باشد.
+
+	\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.95\linewidth]{source/scheeem.png}
+	\caption{شماتیک نهایی \lr{Top Module}}
+\end{figure}
+
 
 \pagebreak
 
@@ -644,7 +707,10 @@ assign out_mem_address = (in_grant) ? cu_mem_address : 'bz;
 \subsection{توصیف \lr{Golden Model}}
 \subsection{مقایسه‌ی خروجی‌های نهایی با \lr{Golden Model}}
 
+\section{پیاده‌سازی و نتایج حاصل}
 
+با استفاده از نرم افزار ISE سنتز انجام گرفت که نتایج آن در ادامه گزارش آمده است.
+به کمک سنتز موفق تعداد ثبات های استفاده شده، تعداد LUTها و حداقل تعداد کلاک به طوری که سیستم دچار مشکلات زمان بندی نشود را به دست می آید.
 
 \end{document}
 
