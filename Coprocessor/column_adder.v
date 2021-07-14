@@ -1,5 +1,5 @@
 
-module column_adder #(parameter size  , parameter cell_width, parameter width = cell_width * size) (
+module column_adder #(parameter size = 4 , parameter cell_width = 32, parameter width = cell_width * size) (
 	input [width - 1 : 0] in_col,
 	input in_clk,
 	input in_reset,
@@ -34,10 +34,10 @@ adder adder_unit(
         .output_z_stb(n_add_z_stb) ,
         .input_a_ack (n_add_a_ack),
         .input_b_ack (n_add_b_ack));
-
+/*
 always @(negedge in_reset) begin
 out_cell <= 0;
-r_state = s_IDLE;
+r_state <= s_IDLE;
 r_counter <= 0;
 r_add_in_a <= 0;
 r_add_in_b <= 0;
@@ -47,12 +47,26 @@ r_add_b_stb <= 0;
 r_add_z_ack <= 0;
 out_ready <= 0;
 end
+*/
 
-always @(posedge in_clk) begin
+always @(posedge in_clk, negedge in_reset) begin
+	if (~in_reset)begin
+	out_cell <= 0;
+	r_state <= s_IDLE;
+	r_counter <= 0;
+	r_add_in_a <= 0;
+	r_add_in_b <= 0;
+	r_add_reset <= 1;
+	r_add_a_stb <= 0;
+	r_add_b_stb <= 0;
+	r_add_z_ack <= 0;
+	out_ready <= 0;
+	end
+	
 	case (r_state) 
 	s_IDLE: begin
 	out_cell <= 0;
-	r_state = s_IDLE;
+	r_state <= s_IDLE;
 	r_counter <= 0;
 	r_add_in_a <= 0;
 	r_add_in_b <= 0;
@@ -142,7 +156,7 @@ end
 endmodule
 
 `timescale 1ns/1ns
-
+/*
 module column_adder_tb();
 
 
@@ -194,3 +208,4 @@ initial begin
 	ready = 1;
 end
 endmodule
+*/

@@ -1,5 +1,5 @@
 
-module square_matrix_mult #(parameter size , parameter cell_width , parameter address_width ,parameter width = cell_width * size )
+module square_matrix_mult #(parameter size = 4 , parameter cell_width = 32 , parameter address_width = 4,parameter width = cell_width * size )
        (input in_ready ,
         input [width-1:0] in_data,
 	input in_data_ready,
@@ -58,7 +58,7 @@ column_processor #(.size(size)  , .cell_width (cell_width), .width(width)) col_p
 	.out_cell_c (n_proc_out_z),
         .out_ready (n_proc_out_ready) );
 
-
+/*
 always @(negedge in_reset) begin
 	out_reg_address <= 0;
 	out_type <= 0;
@@ -86,8 +86,36 @@ always @(negedge in_reset) begin
 
 	r_states <= s_IDLE;
         end
+	*/
+	always @(posedge in_clk, negedge in_reset) begin 
+	if (~in_reset)begin
+		out_reg_address <= 0;
+	out_type <= 0;
+	out_matrix <= 0;
+	out_read_en <= 0;
+	out_write_en <= 0;
+    out_cell_c <= 0;
+    out_ready <= 0;
+
+	r_counter_level1 <= 0;
+     r_counter_level2 <= 0;
+   
+	r_proc_in_a <= 0;
+	r_proc_in_b <= 0;
+    r_proc_in_ready <= 0;
+	r_proc_reset <= 0;
+	r_proc_ack <= 0;
+
+	r_operation_result <= 0;
+	r_add_in_a <= 0;
+	r_add_a_stb <= 0;
+	r_add_b_stb <= 0;
+	r_add_z_ack <= 0;
+	r_add_reset <= 1;
+
+	r_states <= s_IDLE;
+	end
 	
-	always @(posedge in_clk) begin 
 	case (r_states)
 	s_IDLE: begin 
 		out_reg_address <= 0;
@@ -231,7 +259,7 @@ always @(negedge in_reset) begin
 			r_proc_in_b <= 0;
         		r_proc_in_ready <= 0;
 
-			r_states = s_TAKEA;
+			r_states <= s_TAKEA;
 		end 
 	end
 	s_OP: begin

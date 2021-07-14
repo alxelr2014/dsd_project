@@ -109,13 +109,20 @@ assign n_cu_type = 2'b01; //row
 localparam s_CU_CONTROL = 1'b0, s_PU_CONTROL = 1'b1;
 reg r_states;
 reg reseted;
-
+/*
 always @(negedge in_reset) begin
 	register_reset <= 1;
 	r_states = s_CU_CONTROL;
 	reseted <= 1;
 end
-always @(posedge in_clk) begin
+*/
+always @(posedge in_clk, negedge in_reset) begin
+	if (~in_reset)begin
+		register_reset <= 1;
+	r_states <= s_CU_CONTROL;
+	reseted <= 1;
+	end
+	else begin
 	register_reset <= 1;
 	if (reseted) begin
 		register_reset <= 0;
@@ -151,6 +158,7 @@ always @(posedge in_clk) begin
 		n_sqm_in_data_ready <= 1'b1;
 		end
 	endcase
+	end
 end
 
 

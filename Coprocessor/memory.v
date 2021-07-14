@@ -18,14 +18,21 @@ reg [cell_width - 1:0] memory [size -1 : 0];
 
 assign out_status = memory[1];
 assign out_config = memory[0];
-
+/*
 always @(negedge in_reset) begin
 for (idx = 0 ; idx < size ; idx = idx + 1) begin
 	memory[idx] <= 32'b0;
 end
 end
+*/
+always @(posedge in_clk, negedge in_reset) begin
+	if (~in_reset)begin
+	for (idx = 0 ; idx < size ; idx = idx + 1) begin
+	memory[idx] <= 32'b0;
+	end
+	end
+	else begin
 
-always @(posedge in_clk) begin
 	if (in_read_en) begin
 		for (idx = 0 ; idx < blocks ; idx = idx + 1)
 			out_data[(idx * cell_width)  +: cell_width] <= memory [idx + in_address];
@@ -38,6 +45,7 @@ always @(posedge in_clk) begin
 			memory[idx + in_address]  <= in_data[(idx * cell_width)  +: cell_width];
 	end
 	if (in_write_status_en) memory[1] <= in_status;
+end
 end
 endmodule
 

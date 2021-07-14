@@ -1,5 +1,5 @@
 
-module column_multiplier #(parameter size  , parameter cell_width, parameter width = cell_width * size) (
+module column_multiplier #(parameter size = 4 , parameter cell_width = 32, parameter width = cell_width * size) (
 	input [width - 1 : 0] in_a,
 	input [width - 1: 0] in_b,
 	input in_clk,
@@ -34,10 +34,10 @@ single_multiplier mutliplier(
         .output_z_stb(n_mult_z_stb) ,
         .input_a_ack (n_mult_a_ack),
         .input_b_ack (n_mult_b_ack));
-
+/*
 always @(negedge in_reset) begin
 out_c <= 0;
-r_state = s_IDLE;
+r_state <= s_IDLE;
 r_counter <= 0;
 r_mult_in_a <= 0;
 r_mult_in_b <= 0;
@@ -47,12 +47,25 @@ r_mult_b_stb <= 0;
 r_mult_z_ack <= 0;
 out_ready <= 0;
 end
+*/
+always @(posedge in_clk, negedge in_reset) begin
+	if (~in_reset)begin
+	out_c <= 0;
+r_state <= s_IDLE;
+r_counter <= 0;
+r_mult_in_a <= 0;
+r_mult_in_b <= 0;
+r_mult_reset <= 1;
+r_mult_a_stb <= 0;
+r_mult_b_stb <= 0;
+r_mult_z_ack <= 0;
+out_ready <= 0;
+	end
 
-always @(posedge in_clk) begin
 	case (r_state) 
 	s_IDLE: begin
 	out_c <= 0;
-	r_state = s_IDLE;
+	r_state <= s_IDLE;
 	r_counter <= 0;
 	r_mult_in_a <= 0;
 	r_mult_in_b <= 0;
@@ -77,7 +90,7 @@ always @(posedge in_clk) begin
 			r_mult_b_stb <= 0;
 			r_mult_z_ack <= 0;
 			r_counter <= 0;
-			r_state = s_DONE;
+			r_state <= s_DONE;
 			out_ready <= 1 ;
 		end
 		else begin
@@ -89,7 +102,7 @@ always @(posedge in_clk) begin
 			r_mult_z_ack <= 0;
 			out_c <= out_c;
 			r_counter <= r_counter;
-			r_state = s_MULT;
+			r_state <= s_MULT;
 			out_ready <= 0 ;
 		end
 	end
@@ -103,7 +116,7 @@ always @(posedge in_clk) begin
 			r_mult_b_stb <= 0;
 			r_mult_z_ack <= 1;
 			r_counter <= r_counter + 1;
-			r_state = s_WORK;
+			r_state <= s_WORK;
 			out_ready <= 0 ;
 		end
 		else begin
@@ -115,7 +128,7 @@ always @(posedge in_clk) begin
 			r_mult_z_ack <= 0;
 			out_c <= out_c;
 			r_counter <= r_counter;
-			r_state = s_MULT;
+			r_state <= s_MULT;
 			out_ready <= 0 ;
 		end
 	end
@@ -131,14 +144,14 @@ always @(posedge in_clk) begin
 		out_c <= out_c;
 		r_state <= s_DONE;
 		if (out_ack)
-			r_state = s_IDLE;
+			r_state <= s_IDLE;
 		end
 	endcase
 end
 endmodule
 
 `timescale 1ns/1ns
-
+/*
 module column_multiplier_tb();
 
 
@@ -190,3 +203,4 @@ initial begin
 	
 end
 endmodule
+*/
