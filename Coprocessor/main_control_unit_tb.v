@@ -73,7 +73,9 @@ module main_control_unit_tb;
         #(1.9*half_cc)
         //time = 3
 
-        #(2*half_cc)
+        #(0.5*half_cc)
+        m_Status <= t_o_Status;
+        #(1.5*half_cc)
         //time = 5
 
         repeat (4) begin
@@ -116,7 +118,7 @@ module main_control_unit_tb;
         m_Result_Ready <= 1;
         #(1.9*half_cc)
 
-        #(4*half_cc)
+        #(2*half_cc)
         $display("time= %d", $realtime);
         $finish;
     end

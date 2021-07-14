@@ -65,6 +65,8 @@ always @(posedge i_Clock or negedge i_Reset) begin
 			s_Idle: begin
 				if(i_Status[31] == 1'b1) begin
 					r_State <= s_Read_Config;
+					r_Status <= {i_Status[31:2], 2'b10};
+					o_Write_Status_Enable <= 1;
 				end
 				else r_State <= s_Idle;
 			end
@@ -73,6 +75,8 @@ always @(posedge i_Clock or negedge i_Reset) begin
 				r_Lambda <= i_Config[index_width-1:0];
 				r_Gamma <= i_Config[2*index_width-1:index_width];
 				r_Theta <= i_Config[4*index_width-1:3*index_width];
+
+				o_Write_Status_Enable <= 0;
 
 				r_State <= s_Scatter;
 				//set registers for scattering
