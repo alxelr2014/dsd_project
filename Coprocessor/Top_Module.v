@@ -44,7 +44,7 @@ assign Main_CU_Resault_Ready = &Processor_Resault_Ready;
 
 genvar i;
 generate
-    for (i = 0; i < NUMBER_OF_PROCESSORS ; i = i + 1) begin: processor
+    for (i = 0; i < NUMBER_OF_PROCESSORS ; i = i + 1) begin: Processors
     processor #(.size(BLOCK_SIZE) , .cell_width(WORD_SIZE) , .index_width(INDEX_WIDTH) , .memory_size(MEMORY_SIZE) , .memory_size_log(LOG_MEMORY_SIZE)) 
     PU
     (.in_clk(clk),
