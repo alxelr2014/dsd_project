@@ -439,6 +439,33 @@ always @(negedge in_reset) begin
 		if (out_ack)
 			r_states <= s_IDLE;
 	end
+	default: begin
+		out_reg_address <= 0;
+	out_type <= 0;
+	out_matrix <= 0;
+	out_read_en <= 0;
+	out_write_en <= 0;
+    out_cell_c <= 0;
+    out_ready <= 0;
+
+	r_counter_level1 <= 0;
+     r_counter_level2 <= 0;
+   
+	r_proc_in_a <= 0;
+	r_proc_in_b <= 0;
+    r_proc_in_ready <= 0;
+	r_proc_reset <= 0;
+	r_proc_ack <= 0;
+
+	r_operation_result <= 0;
+	r_add_in_a <= 0;
+	r_add_a_stb <= 0;
+	r_add_b_stb <= 0;
+	r_add_z_ack <= 0;
+	r_add_reset <= 1;
+
+	r_states <= s_IDLE;
+	end
 	endcase
 	end
 endmodule
