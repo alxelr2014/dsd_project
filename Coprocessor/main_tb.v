@@ -3,9 +3,9 @@ module top_module_tb;
     
     parameter half_cc = 1;
     parameter WORD_SIZE = 32;
-    parameter NUMBER_OF_PROCESSORS = 4;
+    parameter NUMBER_OF_PROCESSORS = 5;
     parameter MEMORY_SIZE = 1024;
-    parameter BLOCK_SIZE = 3;
+    parameter BLOCK_SIZE = 4;
 
     reg clk , reset;
     reg [64:0] clk_count = 0;
@@ -38,12 +38,12 @@ module top_module_tb;
     	#(0.1*half_cc) reset = 1'b0;
 	    #(0.9*half_cc) reset = 1'b1;
         #(half_cc)
-        $readmemh("C:/Users/LEGION/Desktop/DSD_Project/dsd_project/Coprocessor/test/memory_tb_init.txt", matrix_multiplier.Memory.memory);
+        $readmemh("C:/Users/LEGION/Desktop/DSD_Project/dsd_project/Coprocessor/tests/fiveProcessor/memory_tb_init.txt", matrix_multiplier.Memory.memory);
     end
 
     //Monitoring
     initial begin
-        $monitor("@#clk = %d\n, Memory_Address = %h, Memory_Write_Data = %h, Memory_Read_Data = %h\n Memory_Read_Enable = %b, Memory_Write_Enable = %b \n Requests = %b, Grants = %b \n Main_CU_Status = %b \n Config in memory = %h \n Status in memory = %h \n Index Received = %b \n Row Index = %d \n Column Index = %d \n Processors State: %b - %b - %b - %b \n Result Ready = %b"
+        $monitor("@#clk = %d\n, Memory_Address = %h, Memory_Write_Data = %h, Memory_Read_Data = %h\n Memory_Read_Enable = %b, Memory_Write_Enable = %b \n Requests = %b, Grants = %b \n Main_CU_Status = %b \n Config in memory = %h \n Status in memory = %h \n Index Received = %b \n Row Index = %d \n Column Index = %d \n Processors State: %b - %b - %b - %b - %b \n Result Ready = %b \n Scatter Counter = %d"
         , clk_count
         , matrix_multiplier.Memory_Address
         , matrix_multiplier.Memory_Write_Data
@@ -62,7 +62,9 @@ module top_module_tb;
         , matrix_multiplier.Processors[1].PU.control_unit.r_State
         , matrix_multiplier.Processors[2].PU.control_unit.r_State
         , matrix_multiplier.Processors[3].PU.control_unit.r_State
+        , matrix_multiplier.Processors[4].PU.control_unit.r_State
         , matrix_multiplier.Processor_Resault_Ready
+        , matrix_multiplier.Main_Controller.r_Scatter_Counter
         // , matrix_multiplier.Processors[0].PU.reg_address
         // , matrix_multiplier.Processors[0].PU.n_sqm_out_data
         );

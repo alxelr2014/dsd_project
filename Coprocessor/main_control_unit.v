@@ -114,9 +114,11 @@ always @(posedge i_Clock or negedge i_Reset) begin
 				if (i_Result_Ready == 1) begin
 					if (r_Scatter_Counter < (r_Theta - 1)) begin
 						r_State <= s_Scatter;
+						o_Indexes_Ready <= 1;
 					end else if (r_Scatter_Counter == (r_Theta - 1)) begin
 						r_Processor_Counter <= r_Theta * p - r_Gamma * r_Lambda;	//TODO is this synthesizable?
 						r_State <= s_Scatter;
+						o_Indexes_Ready <= 1;
 					end else begin
 						r_State <= s_Change_Status;
 						r_Scatter_Counter <= 0;
